@@ -1,0 +1,173 @@
+#VRML_SIM R2021a utf8
+WorldInfo {
+  basicTimeStep 16
+  coordinateSystem "NUE"
+}
+Viewpoint {
+  orientation 0 -1 0 1.5707963267948966
+  position -0.6563485864337985 0.09000010101320774 -0.02750003673186555
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+Floor {
+}
+Robot {
+  translation 0 0.1 0
+  rotation 1 0 0 1.5708
+  children [
+    DEF BODY Group {
+      children [
+        Transform {
+          translation 0 -0.1 0.01
+          rotation 1 0 0 -0.1308996938995747
+          children [
+            Shape {
+              appearance DEF BODY_APPEARANCE PBRAppearance {
+                baseColor 0.666667 0.333333 0
+                roughness 1
+                metalness 0
+              }
+              geometry Capsule {
+                height 0.05
+                radius 0.05
+              }
+            }
+          ]
+        }
+        Transform {
+          translation 0 0.08 0.01
+          children [
+            Shape {
+              appearance USE BODY_APPEARANCE
+              geometry Sphere {
+                radius 0.04
+                subdivision 2
+              }
+            }
+          ]
+        }
+        Shape {
+          appearance USE BODY_APPEARANCE
+          geometry Sphere {
+            radius 0.05
+            subdivision 2
+          }
+        }
+      ]
+    }
+    DEF LEG1 HingeJoint {
+      jointParameters HingeJointParameters {
+        axis 0 0 1
+        anchor 0.03 0.03 0.03
+      }
+      device [
+        RotationalMotor {
+          name "l1"
+        }
+      ]
+      endPoint Solid {
+        translation 0.03 0.03 0.03
+        rotation -6.406309999845989e-06 2.6535799999362055e-06 0.9999999999759588 0.7853979999999999
+        children [
+          DEF G_LEG Group {
+            children [
+              Shape {
+                appearance USE BODY_APPEARANCE
+                geometry Box {
+                  size 0.01 0.01 0.01
+                }
+              }
+              Transform {
+                translation 0.0186603 2.6078e-08 0.025
+                rotation -0.44721292362185294 -0.44721392362168216 0.774596867708936 1.82348
+                children [
+                  Shape {
+                    appearance USE BODY_APPEARANCE
+                    geometry Capsule {
+                      height 0.05
+                      radius 0.005
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+        boundingObject USE G_LEG
+        physics Physics {
+        }
+      }
+    }
+    DEF LEG2 HingeJoint {
+      jointParameters HingeJointParameters {
+        axis 0 0 1
+        anchor -0.03 0.03 0.03
+      }
+      device [
+        RotationalMotor {
+          name "l2"
+        }
+      ]
+      endPoint Solid {
+        translation -0.03 0.03 0.03
+        rotation 0 0 0.9999999999999999 2.6179953071795863
+        children [
+          USE G_LEG
+        ]
+        boundingObject USE G_LEG
+        physics Physics {
+        }
+      }
+    }
+    DEF LEG3 HingeJoint {
+      jointParameters HingeJointParameters {
+        axis 0 0 1
+        anchor 0.03 -0.03 0.03
+      }
+      device [
+        RotationalMotor {
+          name "l3"
+        }
+      ]
+      endPoint Solid {
+        translation 0.03 -0.03 0.03
+        rotation 0 0 -1 0.785396
+        children [
+          USE G_LEG
+        ]
+        name "solid(1)"
+        boundingObject USE G_LEG
+        physics Physics {
+        }
+      }
+    }
+    DEF LEG4 HingeJoint {
+      jointParameters HingeJointParameters {
+        axis 0 0 1
+        anchor -0.03 -0.03 0.03
+      }
+      device [
+        RotationalMotor {
+          name "l4"
+        }
+      ]
+      endPoint Solid {
+        translation -0.03 -0.03 0.03
+        rotation 1.3293599999987471e-06 -3.4592199999967386e-07 -0.9999999999990566 2.618005307180058
+        children [
+          USE G_LEG
+        ]
+        name "solid(2)"
+        boundingObject USE G_LEG
+        physics Physics {
+        }
+      }
+    }
+  ]
+  boundingObject USE BODY
+  physics Physics {
+  }
+  controller "leg_movement"
+}
