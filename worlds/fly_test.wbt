@@ -1,0 +1,20 @@
+#VRML_SIM R2021a utf8
+WorldInfo {
+  basicTimeStep 16
+  coordinateSystem "NUE"
+}
+Viewpoint {
+  orientation 0 1 0 0
+  position 0.004417365775710196 0.35693180753615367 0.9836880296105571
+  follow "robot"
+  followType "Mounted Shot"
+}
+Floor {
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+SixLeggedFly {
+  controller "legs_controller"
+}

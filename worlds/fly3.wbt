@@ -101,7 +101,7 @@ DEF FLY Robot {
         }
       ]
       endPoint DEF LF_COXA TouchSensor {
-        translation 0.019999803610185964 -0.05999999999998386 0.05000010989506938
+        translation 0.02 -0.06 0.05
         children [
           DEF F_COXA_SHAPE Shape {
             appearance USE BODY_APPEARANCE
@@ -121,7 +121,7 @@ DEF FLY Robot {
               }
             ]
             endPoint DEF LF_FEMUR TouchSensor {
-              translation -3.0357660829594124e-18 -0.049999999999999996 0
+              translation 0 -0.05 0
               rotation 0 0 1 0
               children [
                 DEF F_FEMUR_SHAPE Shape {
@@ -187,7 +187,8 @@ DEF FLY Robot {
                               name "lf_claw"
                               boundingObject USE CLAW_SHAPE
                               physics DEF LEG_PHYSICS Physics {
-                                density 1
+                                density -1
+                                mass 1
                               }
                             }
                           ]
@@ -243,7 +244,7 @@ DEF FLY Robot {
         }
       ]
       endPoint DEF LM_COXA TouchSensor {
-        translation 0.02000000226650124 -0.06999999999999877 -2.6908137985259035e-09
+        translation 0.02 -0.07 0
         children [
           DEF M_COXA_SHAPE Shape {
             appearance USE BODY_APPEARANCE
@@ -374,7 +375,7 @@ DEF FLY Robot {
         }
       ]
       endPoint DEF LR_COXA TouchSensor {
-        translation 0.019999996103809696 -0.05999999999992382 -0.040000038836078534
+        translation 0.02 -0.06 -0.04
         children [
           DEF R_COXA_SHAPE Shape {
             appearance USE BODY_APPEARANCE
@@ -506,7 +507,7 @@ DEF FLY Robot {
         }
       ]
       endPoint DEF RF_COXA TouchSensor {
-        translation -0.01999999909200543 -0.05999999999999994 0.050000001326702244
+        translation -0.02 -0.06 0.05
         children [
           USE F_COXA_SHAPE
           DEF RF_CT HingeJoint {
@@ -614,7 +615,7 @@ DEF FLY Robot {
         }
       ]
       endPoint DEF RM_COXA TouchSensor {
-        translation -0.02000000226650124 -0.06999999999999877 -2.6908137985259035e-09
+        translation -0.02 -0.07 0
         children [
           USE M_COXA_SHAPE
           DEF RM_CT HingeJoint {
@@ -722,7 +723,7 @@ DEF FLY Robot {
         }
       ]
       endPoint DEF RR_COXA TouchSensor {
-        translation -0.019999996103811438 -0.05999999999992382 -0.04000003883606118
+        translation -0.02 -0.06 -0.04
         children [
           USE R_COXA_SHAPE
           DEF RR_CT HingeJoint {
