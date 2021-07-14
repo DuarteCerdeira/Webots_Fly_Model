@@ -76,6 +76,7 @@ PROTO SixLeggedFly [
         device [
           RotationalMotor {
             name "lf_tc_pro/re"
+            maxTorque 20
           }
         ]
         device2 [
@@ -83,11 +84,13 @@ PROTO SixLeggedFly [
             name "lf_tc_rot"
             minPosition -1.5707963267948966
             maxPosition 1.5707963267948966
+            maxTorque 20
           }
         ]
         device3 [
           RotationalMotor {
             name "lf_tc_abd/add"
+            maxTorque 20
           }
         ]
         endPoint DEF LF_COXA TouchSensor {
@@ -108,6 +111,7 @@ PROTO SixLeggedFly [
               device [
                 RotationalMotor {
                   name "lf_ct_flex/ext"
+                  maxTorque 20
                 }
               ]
               endPoint DEF LF_FEMUR TouchSensor {
@@ -129,6 +133,7 @@ PROTO SixLeggedFly [
                     device [
                       RotationalMotor {
                         name "lf_ft_flex/ext"
+                        maxTorque 20
                       }
                     ]
                     endPoint DEF LF_TIBIA TouchSensor {
@@ -150,6 +155,7 @@ PROTO SixLeggedFly [
                           device [
                             RotationalMotor {
                               name "lf_tt_flex/ext"
+                              maxTorque 20
                             }
                           ]
                           endPoint DEF LF_TARSUS TouchSensor {
@@ -219,6 +225,7 @@ PROTO SixLeggedFly [
         device [
           RotationalMotor {
             name "lm_tc_pro/re"
+            maxTorque 20
           }
         ]
         device2 [
@@ -226,11 +233,13 @@ PROTO SixLeggedFly [
             name "lm_tc_rot"
             minPosition -1.5707963267948966
             maxPosition 1.5707963267948966
+            maxTorque 20
           }
         ]
         device3 [
           RotationalMotor {
             name "lm_tc_abd/add"
+            maxTorque 20
           }
         ]
         endPoint DEF LM_COXA TouchSensor {
@@ -251,6 +260,7 @@ PROTO SixLeggedFly [
               device [
                 RotationalMotor {
                   name "lm_ct_flex/ext"
+                  maxTorque 20
                 }
               ]
               endPoint DEF LM_FEMUR TouchSensor {
@@ -272,6 +282,7 @@ PROTO SixLeggedFly [
                     device [
                       RotationalMotor {
                         name "lm_ft_flex/ext"
+                        maxTorque 20
                       }
                     ]
                     endPoint DEF LM_TIBIA TouchSensor {
@@ -293,6 +304,7 @@ PROTO SixLeggedFly [
                           device [
                             RotationalMotor {
                               name "lm_tt_flex/ext"
+                              maxTorque 20
                             }
                           ]
                           endPoint DEF LM_TARSUS TouchSensor {
@@ -350,6 +362,7 @@ PROTO SixLeggedFly [
         device [
           RotationalMotor {
             name "lr_tc_pro/re"
+            maxTorque 20
           }
         ]
         device2 [
@@ -357,11 +370,13 @@ PROTO SixLeggedFly [
             name "lr_tc_rot"
             minPosition -1.5707963267948966
             maxPosition 1.5707963267948966
+            maxTorque 20
           }
         ]
         device3 [
           RotationalMotor {
             name "lr_tc_abd/add"
+            maxTorque 20
           }
         ]
         endPoint DEF LR_COXA TouchSensor {
@@ -382,6 +397,7 @@ PROTO SixLeggedFly [
               device [
                 RotationalMotor {
                   name "lr_ct_flex/ext"
+                  maxTorque 20
                 }
               ]
               endPoint DEF LR_FEMUR TouchSensor {
@@ -403,6 +419,7 @@ PROTO SixLeggedFly [
                     device [
                       RotationalMotor {
                         name "lr_ft_flex/ext"
+                        maxTorque 20
                       }
                     ]
                     endPoint DEF LR_TIBIA TouchSensor {
@@ -424,6 +441,7 @@ PROTO SixLeggedFly [
                           device [
                             RotationalMotor {
                               name "lr_tt_flex/ext"
+                              maxTorque 20
                             }
                           ]
                           endPoint DEF LR_TARSUS TouchSensor {
@@ -482,6 +500,7 @@ PROTO SixLeggedFly [
         device [
           RotationalMotor {
             name "rf_tc_pro/re"
+            maxTorque 20
           }
         ]
         device2 [
@@ -489,11 +508,13 @@ PROTO SixLeggedFly [
             name "rf_tc_rot"
             minPosition -1.5707963267948966
             maxPosition 1.5707963267948966
+            maxTorque 20
           }
         ]
         device3 [
           RotationalMotor {
             name "rf_tc_abd/add"
+            maxTorque 20
           }
         ]
         endPoint DEF RF_COXA TouchSensor {
@@ -508,6 +529,7 @@ PROTO SixLeggedFly [
               device [
                 RotationalMotor {
                   name "rf_ct_flex/ext"
+                  maxTorque 20
                 }
               ]
               endPoint DEF RF_FEMUR TouchSensor {
@@ -523,6 +545,7 @@ PROTO SixLeggedFly [
                     device [
                       RotationalMotor {
                         name "rf_ft_flex/ext"
+                        maxTorque 20
                       }
                     ]
                     endPoint DEF RF_TIBIA TouchSensor {
@@ -538,6 +561,7 @@ PROTO SixLeggedFly [
                           device [
                             RotationalMotor {
                               name "rf_tt_flex/ext"
+                              maxTorque 20
                             }
                           ]
                           endPoint DEF RF_TARSUS TouchSensor {
@@ -590,6 +614,7 @@ PROTO SixLeggedFly [
         device [
           RotationalMotor {
             name "rm_tc_pro/re"
+            maxTorque 20
           }
         ]
         device2 [
@@ -597,11 +622,13 @@ PROTO SixLeggedFly [
             name "rm_tc_rot"
             minPosition -1.5707963267948966
             maxPosition 1.5707963267948966
+            maxTorque 20
           }
         ]
         device3 [
           RotationalMotor {
             name "rm_tc_abd/add"
+            maxTorque 20
           }
         ]
         endPoint DEF RM_COXA TouchSensor {
@@ -616,6 +643,7 @@ PROTO SixLeggedFly [
               device [
                 RotationalMotor {
                   name "rm_ct_flex/ext"
+                  maxTorque 20
                 }
               ]
               endPoint DEF RM_FEMUR TouchSensor {
@@ -631,6 +659,7 @@ PROTO SixLeggedFly [
                     device [
                       RotationalMotor {
                         name "rm_ft_flex/ext"
+                        maxTorque 20
                       }
                     ]
                     endPoint DEF RM_TIBIA TouchSensor {
@@ -646,6 +675,7 @@ PROTO SixLeggedFly [
                           device [
                             RotationalMotor {
                               name "rm_tt_flex/ext"
+                              maxTorque 20
                             }
                           ]
                           endPoint DEF RM_TARSUS TouchSensor {
@@ -698,6 +728,7 @@ PROTO SixLeggedFly [
         device [
           RotationalMotor {
             name "rr_tc_pro/re"
+            maxTorque 20
           }
         ]
         device2 [
@@ -705,11 +736,13 @@ PROTO SixLeggedFly [
             name "rr_tc_rot"
             minPosition -1.5707963267948966
             maxPosition 1.5707963267948966
+            maxTorque 20
           }
         ]
         device3 [
           RotationalMotor {
             name "rr_tc_abd/add"
+            maxTorque 20
           }
         ]
         endPoint DEF RR_COXA TouchSensor {
@@ -724,6 +757,7 @@ PROTO SixLeggedFly [
               device [
                 RotationalMotor {
                   name "rr_ct_flex/ext"
+                  maxTorque 20
                 }
               ]
               endPoint DEF RR_FEMUR TouchSensor {
@@ -739,6 +773,7 @@ PROTO SixLeggedFly [
                     device [
                       RotationalMotor {
                         name "rr_ft_flex/ext"
+                        maxTorque 20
                       }
                     ]
                     endPoint DEF RR_TIBIA TouchSensor {
@@ -754,6 +789,7 @@ PROTO SixLeggedFly [
                           device [
                             RotationalMotor {
                               name "rr_tt_flex/ext"
+                              maxTorque 20
                             }
                           ]
                           endPoint DEF RR_TARSUS TouchSensor {

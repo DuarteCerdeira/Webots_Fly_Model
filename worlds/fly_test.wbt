@@ -1,13 +1,13 @@
 #VRML_SIM R2021a utf8
 WorldInfo {
-  basicTimeStep 16
+  basicTimeStep 8
   coordinateSystem "NUE"
 }
 Viewpoint {
-  orientation 0 1 0 0
-  position 0.004417365775710196 0.35693180753615367 0.9836880296105571
+  orientation -0.3756679795525162 0.9073489966829358 0.18865674479699948 1.0110062598397265
+  position 1.0963696286174842 0.7915603447314276 0.7927779624374154
   follow "robot"
-  followType "Mounted Shot"
+  followType "None"
 }
 Floor {
 }
@@ -16,5 +16,5 @@ TexturedBackground {
 TexturedBackgroundLight {
 }
 SixLeggedFly {
-  controller "legs_controller"
+  controller "oscillator_leg_controller"
 }
