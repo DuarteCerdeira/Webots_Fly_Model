@@ -1,13 +1,18 @@
-#VRML_SIM R2021a utf8
+#VRML_SIM R2021b utf8
 WorldInfo {
   basicTimeStep 16
   coordinateSystem "NUE"
+  contactProperties [
+    ContactProperties {
+      material1 "fly_claw"
+    }
+  ]
 }
 Viewpoint {
-  orientation -0.5567004175356561 0.803850803616864 0.20954362467073115 0.8758525203455744
-  position 0.6904544800680686 0.9003285012726756 0.8404800179584884
+  orientation -0.18659694054977838 0.9506677932260515 0.2478151099109408 1.8990595833494046
+  position 0.8729174928630299 0.663306377892454 -0.27937958071936775
   follow "robot:head"
-  followType "Mounted Shot"
+  followType "None"
 }
 Floor {
 }
@@ -19,7 +24,7 @@ DEF FLY Robot {
   translation 0 0.4 0
   children [
     DEF HEAD TouchSensor {
-      translation 0 -0.01 0.11
+      translation 0 -0.01 0.09
       rotation 1 0 0 -0.1308996938995747
       children [
         DEF HEAD_SHAPE Shape {
@@ -30,14 +35,14 @@ DEF FLY Robot {
           }
           geometry Capsule {
             height 0.02
-            radius 0.05
+            radius 0.04
           }
         }
       ]
       name "head"
       boundingObject USE HEAD_SHAPE
       physics Physics {
-        density 0.5
+        density 0.2
       }
     }
     DEF THORAX TouchSensor {
@@ -45,7 +50,7 @@ DEF FLY Robot {
         DEF THORAX_SHAPE Shape {
           appearance USE BODY_APPEARANCE
           geometry Sphere {
-            radius 0.07
+            radius 0.06
             subdivision 2
           }
         }
@@ -53,40 +58,42 @@ DEF FLY Robot {
       name "thorax"
       boundingObject USE THORAX_SHAPE
       physics Physics {
-        density 0.5
+        density 0.2
       }
     }
     DEF ABDOMEN TouchSensor {
-      translation 0 -0.02 -0.14
+      translation 0 -0.01 -0.11
       rotation 1 0 0 -1.7017003061004252
       children [
         DEF ABDOMEN_SHAPE Shape {
           appearance USE BODY_APPEARANCE
           geometry Capsule {
-            height 0.08
-            radius 0.06
+            height 0.07
+            radius 0.05
           }
         }
       ]
       name "abdomen"
       boundingObject USE ABDOMEN_SHAPE
       physics Physics {
-        density 0.5
+        density 0.1
       }
     }
     DEF LF_TC BallJoint {
       jointParameters BallJointParameters {
-        anchor 0.02 -0.04 0.05
+        anchor 0.02 -0.04 0.04
       }
       jointParameters2 JointParameters {
+        position 0.7
         axis -1 0 0
       }
       jointParameters3 JointParameters {
+        position 0.1
       }
       device [
         RotationalMotor {
           name "lf_tc_pro/re"
-          maxTorque 20
+          maxTorque 30
         }
       ]
       device2 [
@@ -94,17 +101,18 @@ DEF FLY Robot {
           name "lf_tc_rot"
           minPosition -1.5707963267948966
           maxPosition 1.5707963267948966
-          maxTorque 20
+          maxTorque 30
         }
       ]
       device3 [
         RotationalMotor {
           name "lf_tc_abd/add"
-            maxTorque 20
+          maxTorque 30
         }
       ]
       endPoint DEF LF_COXA TouchSensor {
-        translation 0.02 -0.06 0.05
+        translation 0.021527136175044873 -0.059900083305560514 0.041286289055625126
+        rotation -0.049517182829224966 -0.9895182326235243 0.13565292444423652 0.7068155531163084
         children [
           DEF F_COXA_SHAPE Shape {
             appearance USE BODY_APPEARANCE
@@ -115,6 +123,7 @@ DEF FLY Robot {
           }
           DEF LF_CT HingeJoint {
             jointParameters HingeJointParameters {
+              position 1.5
               axis 0 0 1
               anchor 0 -0.02 0
             }
@@ -125,8 +134,8 @@ DEF FLY Robot {
               }
             ]
             endPoint DEF LF_FEMUR TouchSensor {
-              translation 0 -0.05 0
-              rotation 0 0 1 0
+              translation 0.029924849598121625 -0.02212211605003109 0
+              rotation 0 0 1 1.5
               children [
                 DEF F_FEMUR_SHAPE Shape {
                   appearance USE BODY_APPEARANCE
@@ -137,6 +146,7 @@ DEF FLY Robot {
                 }
                 DEF LF_FT HingeJoint {
                   jointParameters HingeJointParameters {
+                    position -1
                     axis 0 0 1
                     anchor 0 -0.03 0
                   }
@@ -147,8 +157,8 @@ DEF FLY Robot {
                     }
                   ]
                   endPoint DEF LF_TIBIA TouchSensor {
-                    translation 0 -0.06 0
-                    rotation 0 0 1 0
+                    translation -0.025244129544236896 -0.04620906917604419 0
+                    rotation 0 0 -1 0.9999999999999998
                     children [
                       DEF F_TIBIA_SHAPE Shape {
                         appearance USE BODY_APPEARANCE
@@ -159,6 +169,7 @@ DEF FLY Robot {
                       }
                       DEF LF_TT HingeJoint {
                         jointParameters HingeJointParameters {
+                          position 0.2
                           axis 0 0 1
                           anchor 0 -0.03 0
                         }
@@ -169,8 +180,8 @@ DEF FLY Robot {
                           }
                         ]
                         endPoint DEF LF_TARSUS TouchSensor {
-                          translation 0 -0.06 0
-                          rotation 0 0 1 0
+                          translation 0.00596007992385184 -0.05940199733523727 0
+                          rotation 0 0 1 0.1999999999999989
                           children [
                             DEF F_TARSUS_SHAPE Shape {
                               appearance USE BODY_APPEARANCE
@@ -191,6 +202,7 @@ DEF FLY Robot {
                                 }
                               ]
                               name "lf_claw"
+                              contactMaterial "fly_claw"
                               boundingObject USE CLAW_SHAPE
                               physics DEF LEG_PHYSICS Physics {
                                 density -1
@@ -199,6 +211,7 @@ DEF FLY Robot {
                             }
                           ]
                           name "lf_tarsus"
+                          contactMaterial "fly_claw"
                           boundingObject USE F_TARSUS_SHAPE
                           physics USE LEG_PHYSICS
                         }
@@ -225,12 +238,13 @@ DEF FLY Robot {
     }
     DEF LM_TC BallJoint {
       jointParameters BallJointParameters {
-        anchor 0.02 -0.065 0
+        anchor 0.02 -0.055 0
       }
       jointParameters2 JointParameters {
         axis -1 0 0
       }
       jointParameters3 JointParameters {
+        position 0.2
       }
       device [
         RotationalMotor {
@@ -253,7 +267,8 @@ DEF FLY Robot {
         }
       ]
       endPoint DEF LM_COXA TouchSensor {
-        translation 0.02 -0.07 0
+        translation 0.020993346653975307 -0.059900332889206216 0
+        rotation 0 0 1 0.1999999999999989
         children [
           DEF M_COXA_SHAPE Shape {
             appearance USE BODY_APPEARANCE
@@ -264,6 +279,7 @@ DEF FLY Robot {
           }
           DEF LM_CT HingeJoint {
             jointParameters HingeJointParameters {
+              position 1.2
               axis 0 0 1
               anchor 0 -0.005 0
             }
@@ -274,8 +290,8 @@ DEF FLY Robot {
               }
             ]
             endPoint DEF LM_FEMUR TouchSensor {
-              translation 0 -0.04 0
-              rotation 0 0 1 0
+              translation 0.03262136800885293 -0.01768252140668358 0
+              rotation 0 0 1 1.2
               children [
                 DEF M_FEMUR_SHAPE Shape {
                   appearance USE BODY_APPEARANCE
@@ -286,6 +302,7 @@ DEF FLY Robot {
                 }
                 DEF LM_FT HingeJoint {
                   jointParameters HingeJointParameters {
+                    position -0.8
                     axis 0 0 1
                     anchor 0 -0.035 0
                   }
@@ -296,8 +313,8 @@ DEF FLY Robot {
                     }
                   ]
                   endPoint DEF LM_TIBIA TouchSensor {
-                    translation 0 -0.065 0
-                    rotation 0 0 1 0
+                    translation -0.021520682726985683 -0.05590120128041497 0
+                    rotation 0 0 -1 0.7999999999999999
                     children [
                       DEF M_TIBIA_SHAPE Shape {
                         appearance USE BODY_APPEARANCE
@@ -308,6 +325,7 @@ DEF FLY Robot {
                       }
                       DEF LM_TT HingeJoint {
                         jointParameters HingeJointParameters {
+                          position 0.3
                           axis 0 0 1
                           anchor 0 -0.03 0
                         }
@@ -318,8 +336,8 @@ DEF FLY Robot {
                           }
                         ]
                         endPoint DEF LM_TARSUS TouchSensor {
-                          translation 0 -0.065 0
-                          rotation 0 0 1 0
+                          translation 0.010343207233146877 -0.06343677711939619 0
+                          rotation 0 0 0.9999999999999999 0.3000000000000006
                           children [
                             DEF M_TARSUS_SHAPE Shape {
                               appearance USE BODY_APPEARANCE
@@ -334,11 +352,13 @@ DEF FLY Robot {
                                 USE CLAW_SHAPE
                               ]
                               name "lm_claw"
+                              contactMaterial "fly_claw"
                               boundingObject USE CLAW_SHAPE
                               physics USE LEG_PHYSICS
                             }
                           ]
                           name "lm_tarsus"
+                          contactMaterial "fly_claw"
                           boundingObject USE M_TARSUS_SHAPE
                           physics USE LEG_PHYSICS
                         }
@@ -362,12 +382,15 @@ DEF FLY Robot {
     }
     DEF LR_TC BallJoint {
       jointParameters BallJointParameters {
-        anchor 0.02 -0.05 -0.04
+        position -0.5
+        anchor 0.02 -0.04 -0.04
       }
       jointParameters2 JointParameters {
+        position -1.1
         axis -1 0 0
       }
       jointParameters3 JointParameters {
+        position 0.2
       }
       device [
         RotationalMotor {
@@ -390,7 +413,8 @@ DEF FLY Robot {
         }
       ]
       endPoint DEF LR_COXA TouchSensor {
-        translation 0.02 -0.06 -0.04
+        translation 0.02090115637894855 -0.04775204376279763 -0.04625249827511777
+        rotation 0.4430260253034775 0.8214143162775432 0.3591746955425707 1.2567459740239846
         children [
           DEF R_COXA_SHAPE Shape {
             appearance USE BODY_APPEARANCE
@@ -401,6 +425,7 @@ DEF FLY Robot {
           }
           DEF LR_CT HingeJoint {
             jointParameters HingeJointParameters {
+              position 0.6
               axis 0 0 1
               anchor 0 -0.01 0
             }
@@ -411,8 +436,8 @@ DEF FLY Robot {
               }
             ]
             endPoint DEF LR_FEMUR TouchSensor {
-              translation 0 -0.035 0
-              rotation 0 0 1 0
+              translation 0.014116061834875878 -0.030633390372741952 0
+              rotation 0 0 1 0.6000000000000003
               children [
                 DEF R_FEMUR_SHAPE Shape {
                   appearance USE BODY_APPEARANCE
@@ -423,6 +448,7 @@ DEF FLY Robot {
                 }
                 DEF LR_FT HingeJoint {
                   jointParameters HingeJointParameters {
+                    position -0.5
                     axis 0 0 1
                     anchor 0 -0.025 0
                   }
@@ -433,8 +459,8 @@ DEF FLY Robot {
                     }
                   ]
                   endPoint DEF LR_TIBIA TouchSensor {
-                    translation 0 -0.055 0
-                    rotation 0 0 1 0
+                    translation -0.014382766158126087 -0.05132747685671117 0
+                    rotation 0 0 -1 0.5000000000000004
                     children [
                       DEF R_TIBIA_SHAPE Shape {
                         appearance USE BODY_APPEARANCE
@@ -445,6 +471,7 @@ DEF FLY Robot {
                       }
                       DEF LR_TT HingeJoint {
                         jointParameters HingeJointParameters {
+                          position 0.2
                           axis 0 0 1
                           anchor 0 -0.03 0
                         }
@@ -455,8 +482,8 @@ DEF FLY Robot {
                           }
                         ]
                         endPoint DEF LR_TARSUS TouchSensor {
-                          translation 0 -0.075 0
-                          rotation 0 0 1 0
+                          translation 0.00894011988577776 -0.07410299600285591 0
+                          rotation 0 0 1 0.1999999999999989
                           children [
                             DEF R_TARSUS_SHAPE Shape {
                               appearance USE BODY_APPEARANCE
@@ -471,11 +498,13 @@ DEF FLY Robot {
                                 USE CLAW_SHAPE
                               ]
                               name "lr_claw"
+                              contactMaterial "fly_claw"
                               boundingObject USE CLAW_SHAPE
                               physics USE LEG_PHYSICS
                             }
                           ]
                           name "lr_tarsus"
+                          contactMaterial "fly_claw"
                           boundingObject USE R_TARSUS_SHAPE
                           physics USE LEG_PHYSICS
                         }
@@ -499,18 +528,20 @@ DEF FLY Robot {
     }
     DEF RF_TC BallJoint {
       jointParameters BallJointParameters {
-        anchor -0.02 -0.04 0.05
+        anchor -0.02 -0.04 0.04
       }
       jointParameters2 JointParameters {
+        position 0.7
         axis -1 0 0
       }
       jointParameters3 JointParameters {
+        position 0.1
         axis 0 0 -1
       }
       device [
         RotationalMotor {
           name "rf_tc_pro/re"
-          maxTorque 20
+          maxTorque 30
         }
       ]
       device2 [
@@ -518,21 +549,23 @@ DEF FLY Robot {
           name "rf_tc_rot"
           minPosition -1.5707963267948966
           maxPosition 1.5707963267948966
-          maxTorque 20
+          maxTorque 30
         }
       ]
       device3 [
         RotationalMotor {
           name "rf_tc_abd/add"
-          maxTorque 20
+          maxTorque 30
         }
       ]
       endPoint DEF RF_COXA TouchSensor {
-        translation -0.02 -0.06 0.05
+        translation -0.021527136175044873 -0.059900083305560514 0.041286289055625126
+        rotation -0.049517182829224966 0.9895182326235243 -0.13565292444423652 0.7068155531163084
         children [
           USE F_COXA_SHAPE
           DEF RF_CT HingeJoint {
             jointParameters HingeJointParameters {
+              position 1.5
               axis 0 0 -1
               anchor 0 -0.02 0
             }
@@ -543,12 +576,13 @@ DEF FLY Robot {
               }
             ]
             endPoint DEF RF_FEMUR TouchSensor {
-              translation 0 -0.05 0
-              rotation 0 0 -1 0
+              translation -0.029924849598121625 -0.02212211605003109 0
+              rotation 0 0 -1 1.5
               children [
                 USE F_FEMUR_SHAPE
                 DEF RF_FT HingeJoint {
                   jointParameters HingeJointParameters {
+                    position -1
                     axis 0 0 -1
                     anchor 0 -0.03 0
                   }
@@ -559,12 +593,13 @@ DEF FLY Robot {
                     }
                   ]
                   endPoint DEF RF_TIBIA TouchSensor {
-                    translation 0 -0.06 0
-                    rotation 0 0 -1 0
+                    translation 0.025244129544236896 -0.04620906917604419 0
+                    rotation 0 0 1 0.9999999999999998
                     children [
                       USE F_TIBIA_SHAPE
                       DEF RF_TT HingeJoint {
                         jointParameters HingeJointParameters {
+                          position 0.2
                           axis 0 0 -1
                           anchor 0 -0.03 0
                         }
@@ -575,8 +610,8 @@ DEF FLY Robot {
                           }
                         ]
                         endPoint DEF RF_TARSUS TouchSensor {
-                          translation 0 -0.06 0
-                          rotation 0 0 -1 0
+                          translation -0.00596007992385184 -0.05940199733523727 0
+                          rotation 0 0 -1 0.1999999999999989
                           children [
                             USE F_TARSUS_SHAPE
                             DEF RF_CLAW TouchSensor {
@@ -585,11 +620,13 @@ DEF FLY Robot {
                                 USE CLAW_SHAPE
                               ]
                               name "rf_claw"
+                              contactMaterial "fly_claw"
                               boundingObject USE CLAW_SHAPE
                               physics USE LEG_PHYSICS
                             }
                           ]
                           name "rf_tarsus"
+                          contactMaterial "fly_claw"
                           boundingObject USE F_TARSUS_SHAPE
                           physics USE LEG_PHYSICS
                         }
@@ -613,12 +650,13 @@ DEF FLY Robot {
     }
     DEF RM_TC BallJoint {
       jointParameters BallJointParameters {
-        anchor -0.02 -0.065 0
+        anchor -0.02 -0.055 0
       }
       jointParameters2 JointParameters {
         axis -1 0 0
       }
       jointParameters3 JointParameters {
+        position 0.2
         axis 0 0 -1
       }
       device [
@@ -642,11 +680,13 @@ DEF FLY Robot {
         }
       ]
       endPoint DEF RM_COXA TouchSensor {
-        translation -0.02 -0.07 0
+        translation -0.020993346653975307 -0.059900332889206216 0
+        rotation 0 0 -1 0.1999999999999989
         children [
           USE M_COXA_SHAPE
           DEF RM_CT HingeJoint {
             jointParameters HingeJointParameters {
+              position 1.2
               axis 0 0 -1
               anchor 0 -0.005 0
             }
@@ -657,12 +697,13 @@ DEF FLY Robot {
               }
             ]
             endPoint DEF RM_FEMUR TouchSensor {
-              translation 0 -0.04 0
-              rotation 0 0 -1 0
+              translation -0.03262136800885293 -0.01768252140668358 0
+              rotation 0 0 -1 1.2
               children [
                 USE M_FEMUR_SHAPE
                 DEF RM_FT HingeJoint {
                   jointParameters HingeJointParameters {
+                    position -0.8
                     axis 0 0 -1
                     anchor 0 -0.035 0
                   }
@@ -673,12 +714,13 @@ DEF FLY Robot {
                     }
                   ]
                   endPoint DEF RM_TIBIA TouchSensor {
-                    translation 0 -0.065 0
-                    rotation 0 0 -1 0
+                    translation 0.021520682726985683 -0.05590120128041497 0
+                    rotation 0 0 1 0.7999999999999999
                     children [
                       USE M_TIBIA_SHAPE
                       DEF RM_TT HingeJoint {
                         jointParameters HingeJointParameters {
+                          position 0.3
                           axis 0 0 -1
                           anchor 0 -0.03 0
                         }
@@ -689,8 +731,8 @@ DEF FLY Robot {
                           }
                         ]
                         endPoint DEF RM_TARSUS TouchSensor {
-                          translation 0 -0.065 0
-                          rotation 0 0 -1 0
+                          translation -0.010343207233146877 -0.06343677711939619 0
+                          rotation 0 0 -0.9999999999999999 0.3000000000000006
                           children [
                             USE M_TARSUS_SHAPE
                             DEF RM_CLAW TouchSensor {
@@ -699,11 +741,13 @@ DEF FLY Robot {
                                 USE CLAW_SHAPE
                               ]
                               name "rm_claw"
+                              contactMaterial "fly_claw"
                               boundingObject USE CLAW_SHAPE
                               physics USE LEG_PHYSICS
                             }
                           ]
                           name "rm_tarsus"
+                          contactMaterial "fly_claw"
                           boundingObject USE M_TARSUS_SHAPE
                           physics USE LEG_PHYSICS
                         }
@@ -727,12 +771,15 @@ DEF FLY Robot {
     }
     DEF RR_TC BallJoint {
       jointParameters BallJointParameters {
-        anchor -0.02 -0.05 -0.04
+        position -0.5
+        anchor -0.02 -0.04 -0.04
       }
       jointParameters2 JointParameters {
+        position -1.1
         axis -1 0 0
       }
       jointParameters3 JointParameters {
+        position 0.2
         axis 0 0 -1
       }
       device [
@@ -756,11 +803,13 @@ DEF FLY Robot {
         }
       ]
       endPoint DEF RR_COXA TouchSensor {
-        translation -0.02 -0.06 -0.04
+        translation -0.02090115637894855 -0.04775204376279763 -0.04625249827511777
+        rotation 0.4430260253034775 -0.8214143162775432 -0.3591746955425707 1.2567459740239846
         children [
           USE R_COXA_SHAPE
           DEF RR_CT HingeJoint {
             jointParameters HingeJointParameters {
+              position 0.6
               axis 0 0 -1
               anchor 0 -0.01 0
             }
@@ -771,12 +820,13 @@ DEF FLY Robot {
               }
             ]
             endPoint DEF RR_FEMUR TouchSensor {
-              translation 0 -0.035 0
-              rotation 0 0 -1 0
+              translation -0.014116061834875878 -0.030633390372741952 0
+              rotation 0 0 -1 0.6000000000000003
               children [
                 USE R_FEMUR_SHAPE
                 DEF RR_FT HingeJoint {
                   jointParameters HingeJointParameters {
+                    position -0.5
                     axis 0 0 -1
                     anchor 0 -0.025 0
                   }
@@ -787,12 +837,13 @@ DEF FLY Robot {
                     }
                   ]
                   endPoint DEF RR_TIBIA TouchSensor {
-                    translation 0 -0.055 0
-                    rotation 0 0 -1 0
+                    translation 0.014382766158126087 -0.05132747685671117 0
+                    rotation 0 0 1 0.5000000000000004
                     children [
                       USE R_TIBIA_SHAPE
                       DEF RR_TT HingeJoint {
                         jointParameters HingeJointParameters {
+                          position 0.2
                           axis 0 0 -1
                           anchor 0 -0.03 0
                         }
@@ -803,8 +854,8 @@ DEF FLY Robot {
                           }
                         ]
                         endPoint DEF RR_TARSUS TouchSensor {
-                          translation 0 -0.075 0
-                          rotation 0 0 -1 0
+                          translation -0.00894011988577776 -0.07410299600285591 0
+                          rotation 0 0 -1 0.1999999999999989
                           children [
                             USE R_TARSUS_SHAPE
                             DEF RR_CLAW TouchSensor {
@@ -813,11 +864,13 @@ DEF FLY Robot {
                                 USE CLAW_SHAPE
                               ]
                               name "rr_claw"
+                              contactMaterial "fly_claw"
                               boundingObject USE CLAW_SHAPE
                               physics USE LEG_PHYSICS
                             }
                           ]
                           name "rr_tarsus"
+                          contactMaterial "fly_claw"
                           boundingObject USE R_TARSUS_SHAPE
                           physics USE LEG_PHYSICS
                         }
@@ -844,6 +897,6 @@ DEF FLY Robot {
   physics Physics {
     density 1
   }
-  controller "legs_controller"
+  controller "oscillator_leg_controller"
   supervisor TRUE
 }

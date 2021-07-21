@@ -1,13 +1,17 @@
-#VRML_SIM R2021a utf8
+#VRML_SIM R2021b utf8
 WorldInfo {
   basicTimeStep 8
   coordinateSystem "NUE"
+  contactProperties [
+    ContactProperties {
+      material1 "fly_claw"
+    }
+  ]
 }
 Viewpoint {
-  orientation -0.3756679795525162 0.9073489966829358 0.18865674479699948 1.0110062598397265
-  position 1.0963696286174842 0.7915603447314276 0.7927779624374154
+  orientation 2.2390967219443817e-05 0.9999999996901111 1.088220945625859e-05 1.5707894853260416
+  position 1.0634040744451485 0.15628582528923093 0.10564445064063242
   follow "robot"
-  followType "None"
 }
 Floor {
 }
@@ -16,5 +20,6 @@ TexturedBackground {
 TexturedBackgroundLight {
 }
 SixLeggedFly {
+  translation 0 0.2 0
   controller "oscillator_leg_controller"
 }
