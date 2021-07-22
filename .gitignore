@@ -1,0 +1,7 @@
+# Compiled source # 
+*.exe
+*.o
+
+# Project files #
+.vscode
+*.wbproj
