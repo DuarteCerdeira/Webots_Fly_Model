@@ -6,5 +6,5 @@ maximizedDockId: -1
 centralWidgetVisible: 1
 orthographicViewHeight: 1
 textFiles: 0 "controllers/oscillator_leg_controller/oscillator_leg_controller.c"
-globalOptionalRendering: CoordinateSystem::AllBoundingObjects
+globalOptionalRendering: CoordinateSystem
 consoles: Console:All:All
