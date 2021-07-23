@@ -12,16 +12,42 @@ PROTO SixLeggedFly [
       translation 0 -0.01 0.09
       rotation 1 0 0 -0.1308996938995747
       children [
-        DEF HEAD_SHAPE Shape {
-          appearance DEF BODY_APPEARANCE PBRAppearance {
-            baseColor 0.666667 0.333333 0
-            roughness 1
-            metalness 0
-          }
-          geometry Capsule {
-            height 0.02
-            radius 0.04
-          }
+        DEF HEAD_SHAPE Group {
+          children [
+            Shape {
+              appearance DEF BODY_APPEARANCE PBRAppearance {
+                baseColor 0.666667 0.333333 0
+                roughness 1
+                metalness 0
+              }
+              geometry Capsule {
+                height 0.02
+                radius 0.04
+              }
+            }
+            Transform {
+              translation 0.03 0.01 0
+              children [
+                DEF EYE_SHAPE Shape {
+                  appearance DEF EYE_APPEARENCE PBRAppearance {
+                    baseColor 1 0 0
+                    roughness 1
+                    metalness 0
+                  }
+                  geometry Sphere {
+                    radius 0.03
+                    subdivision 2
+                  }
+                }
+              ]
+            }
+            Transform {
+              translation -0.03 0.01 0
+              children [
+                USE EYE_SHAPE
+              ]
+            }
+          ]
         }
       ]
       name "head"
@@ -62,6 +88,53 @@ PROTO SixLeggedFly [
       boundingObject USE ABDOMEN_SHAPE
       physics Physics {
         density 0.1
+      }
+    }
+    DEF WINGS TouchSensor {
+      translation 0 0.045 -0.06
+      children [
+        DEF WINGS_SHAPE Group {
+          children [
+            Shape {
+              appearance DEF WINGS_APPEARENCE PBRAppearance {
+                transparency 0.5
+                roughness 1
+                metalness 0
+              }
+              geometry Cylinder {
+                height 0.005
+                radius 0.06
+              }
+            }
+            Transform {
+              translation 0 0 -0.075
+              children [
+                Shape {
+                  appearance USE WINGS_APPEARENCE
+                  geometry Box {
+                    size 0.12 0.005 0.15
+                  }
+                }
+              ]
+            }
+            Transform {
+              translation 0 0 -0.15
+              children [
+                Shape {
+                  appearance USE WINGS_APPEARENCE
+                  geometry Cylinder {
+                    height 0.005
+                    radius 0.06
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+      boundingObject USE WINGS_SHAPE
+      physics Physics {
+        density 0.05
       }
     }
     DEF LF_TC BallJoint {
@@ -119,7 +192,7 @@ PROTO SixLeggedFly [
               }
             ]
             endPoint DEF LF_FEMUR TouchSensor {
-              translation 0.029924849598121632 -0.02212211605003109 0
+              translation 0.029924849598121583 -0.02212211605003109 0
               rotation 0 0 1 1.5
               children [
                 DEF F_FEMUR_SHAPE Shape {
@@ -165,7 +238,7 @@ PROTO SixLeggedFly [
                           }
                         ]
                         endPoint DEF LF_TARSUS TouchSensor {
-                          translation 0.005960079923851837 -0.05940199733523725 0
+                          translation 0.005960079923851856 -0.05940199733523735 0
                           rotation 0 0 1 0.1999999999999989
                           children [
                             DEF F_TARSUS_SHAPE Shape {
@@ -252,7 +325,7 @@ PROTO SixLeggedFly [
         }
       ]
       endPoint DEF LM_COXA TouchSensor {
-        translation 0.020993346653975307 -0.05990033288920621 0
+        translation 0.02099334665397531 -0.05990033288920626 0
         rotation 0 0 1 0.1999999999999989
         children [
           DEF M_COXA_SHAPE Shape {
@@ -321,7 +394,7 @@ PROTO SixLeggedFly [
                           }
                         ]
                         endPoint DEF LM_TARSUS TouchSensor {
-                          translation 0.010343207233146886 -0.0634367771193962 0
+                          translation 0.010343207233146858 -0.06343677711939613 0
                           rotation 0 0 0.9999999999999999 0.3000000000000006
                           children [
                             DEF M_TARSUS_SHAPE Shape {
@@ -398,8 +471,8 @@ PROTO SixLeggedFly [
         }
       ]
       endPoint DEF LR_COXA TouchSensor {
-        translation 0.023050776303664276 -0.04825335614909679 -0.04475130258152087
-        rotation 0.259926939757792 0.8402731334779391 0.47579307176893054 1.1529595029935413
+        translation 0.020901156378948554 -0.047752043762797625 -0.046252498275117765
+        rotation 0.4430260253034775 0.8214143162775432 0.3591746955425707 1.2567459740239846
         children [
           DEF R_COXA_SHAPE Shape {
             appearance USE BODY_APPEARANCE
@@ -421,7 +494,7 @@ PROTO SixLeggedFly [
               }
             ]
             endPoint DEF LR_FEMUR TouchSensor {
-              translation 0.014116061834875883 -0.03063339037274196 0
+              translation 0.014116061834875853 -0.030633390372741903 0
               rotation 0 0 1 0.6000000000000003
               children [
                 DEF R_FEMUR_SHAPE Shape {
@@ -444,7 +517,7 @@ PROTO SixLeggedFly [
                     }
                   ]
                   endPoint DEF LR_TIBIA TouchSensor {
-                    translation -0.01438276615812609 -0.05132747685671118 0
+                    translation -0.014382766158126057 -0.051327476856711116 0
                     rotation 0 0 -1 0.5000000000000004
                     children [
                       DEF R_TIBIA_SHAPE Shape {
@@ -467,7 +540,7 @@ PROTO SixLeggedFly [
                           }
                         ]
                         endPoint DEF LR_TARSUS TouchSensor {
-                          translation 0.008940119885777755 -0.07410299600285589 0
+                          translation 0.008940119885777777 -0.074102996002856 0
                           rotation 0 0 1 0.1999999999999989
                           children [
                             DEF R_TARSUS_SHAPE Shape {
@@ -561,7 +634,7 @@ PROTO SixLeggedFly [
               }
             ]
             endPoint DEF RF_FEMUR TouchSensor {
-              translation -0.029924849598121632 -0.02212211605003109 0
+              translation -0.029924849598121583 -0.02212211605003109 0
               rotation 0 0 -1 1.5
               children [
                 USE F_FEMUR_SHAPE
@@ -595,7 +668,7 @@ PROTO SixLeggedFly [
                           }
                         ]
                         endPoint DEF RF_TARSUS TouchSensor {
-                          translation -0.005960079923851837 -0.05940199733523725 0
+                          translation -0.005960079923851856 -0.05940199733523735 0
                           rotation 0 0 -1 0.1999999999999989
                           children [
                             USE F_TARSUS_SHAPE
@@ -665,7 +738,7 @@ PROTO SixLeggedFly [
         }
       ]
       endPoint DEF RM_COXA TouchSensor {
-        translation -0.020993346653975307 -0.05990033288920621 0
+        translation -0.02099334665397531 -0.05990033288920626 0
         rotation 0 0 -1 0.1999999999999989
         children [
           USE M_COXA_SHAPE
@@ -716,7 +789,7 @@ PROTO SixLeggedFly [
                           }
                         ]
                         endPoint DEF RM_TARSUS TouchSensor {
-                          translation -0.010343207233146886 -0.0634367771193962 0
+                          translation -0.010343207233146858 -0.06343677711939613 0
                           rotation 0 0 -0.9999999999999999 0.3000000000000006
                           children [
                             USE M_TARSUS_SHAPE
@@ -788,8 +861,8 @@ PROTO SixLeggedFly [
         }
       ]
       endPoint DEF RR_COXA TouchSensor {
-        translation -0.023050776303664276 -0.04825335614909679 -0.04475130258152087
-        rotation 0.259926939757792 -0.8402731334779391 -0.47579307176893054 1.1529595029935413
+        translation -0.020901156378948554 -0.047752043762797625 -0.046252498275117765
+        rotation 0.4430260253034775 -0.8214143162775432 -0.3591746955425707 1.2567459740239846
         children [
           USE R_COXA_SHAPE
           DEF RR_CT HingeJoint {
@@ -805,7 +878,7 @@ PROTO SixLeggedFly [
               }
             ]
             endPoint DEF RR_FEMUR TouchSensor {
-              translation -0.014116061834875883 -0.03063339037274196 0
+              translation -0.014116061834875853 -0.030633390372741903 0
               rotation 0 0 -1 0.6000000000000003
               children [
                 USE R_FEMUR_SHAPE
@@ -822,7 +895,7 @@ PROTO SixLeggedFly [
                     }
                   ]
                   endPoint DEF RR_TIBIA TouchSensor {
-                    translation 0.01438276615812609 -0.05132747685671118 0
+                    translation 0.014382766158126057 -0.051327476856711116 0
                     rotation 0 0 1 0.5000000000000004
                     children [
                       USE R_TIBIA_SHAPE
@@ -839,7 +912,7 @@ PROTO SixLeggedFly [
                           }
                         ]
                         endPoint DEF RR_TARSUS TouchSensor {
-                          translation -0.008940119885777755 -0.07410299600285589 0
+                          translation -0.008940119885777777 -0.074102996002856 0
                           rotation 0 0 -1 0.1999999999999989
                           children [
                             USE R_TARSUS_SHAPE
@@ -880,7 +953,7 @@ PROTO SixLeggedFly [
   ]
   boundingObject USE THORAX_SHAPE
   physics Physics {
-    density 1
+    density 0.2
   }
   controller IS controller
   supervisor TRUE

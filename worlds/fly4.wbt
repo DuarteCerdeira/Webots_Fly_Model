@@ -206,7 +206,7 @@ DEF FLY Robot {
               }
             ]
             endPoint DEF LF_FEMUR TouchSensor {
-              translation 0.02992484959812159 -0.02212211605003109 0
+              translation 0.029924849598121583 -0.02212211605003109 0
               rotation 0 0 1 1.5
               children [
                 DEF F_FEMUR_SHAPE Shape {
@@ -252,7 +252,7 @@ DEF FLY Robot {
                           }
                         ]
                         endPoint DEF LF_TARSUS TouchSensor {
-                          translation 0.0059600799238518545 -0.059401997335237336 0
+                          translation 0.005960079923851856 -0.05940199733523735 0
                           rotation 0 0 1 0.1999999999999989
                           children [
                             DEF F_TARSUS_SHAPE Shape {
@@ -339,7 +339,7 @@ DEF FLY Robot {
         }
       ]
       endPoint DEF LM_COXA TouchSensor {
-        translation 0.02099334665397531 -0.05990033288920625 0
+        translation 0.02099334665397531 -0.05990033288920626 0
         rotation 0 0 1 0.1999999999999989
         children [
           DEF M_COXA_SHAPE Shape {
@@ -408,7 +408,7 @@ DEF FLY Robot {
                           }
                         ]
                         endPoint DEF LM_TARSUS TouchSensor {
-                          translation 0.01034320723314686 -0.06343677711939613 0
+                          translation 0.010343207233146858 -0.06343677711939613 0
                           rotation 0 0 0.9999999999999999 0.3000000000000006
                           children [
                             DEF M_TARSUS_SHAPE Shape {
@@ -508,7 +508,7 @@ DEF FLY Robot {
               }
             ]
             endPoint DEF LR_FEMUR TouchSensor {
-              translation 0.014116061834875859 -0.03063339037274191 0
+              translation 0.014116061834875853 -0.030633390372741903 0
               rotation 0 0 1 0.6000000000000003
               children [
                 DEF R_FEMUR_SHAPE Shape {
@@ -531,7 +531,7 @@ DEF FLY Robot {
                     }
                   ]
                   endPoint DEF LR_TIBIA TouchSensor {
-                    translation -0.014382766158126063 -0.05132747685671112 0
+                    translation -0.014382766158126057 -0.051327476856711116 0
                     rotation 0 0 -1 0.5000000000000004
                     children [
                       DEF R_TIBIA_SHAPE Shape {
@@ -554,7 +554,7 @@ DEF FLY Robot {
                           }
                         ]
                         endPoint DEF LR_TARSUS TouchSensor {
-                          translation 0.008940119885777774 -0.07410299600285597 0
+                          translation 0.008940119885777777 -0.074102996002856 0
                           rotation 0 0 1 0.1999999999999989
                           children [
                             DEF R_TARSUS_SHAPE Shape {
@@ -648,7 +648,7 @@ DEF FLY Robot {
               }
             ]
             endPoint DEF RF_FEMUR TouchSensor {
-              translation -0.02992484959812159 -0.02212211605003109 0
+              translation -0.029924849598121583 -0.02212211605003109 0
               rotation 0 0 -1 1.5
               children [
                 USE F_FEMUR_SHAPE
@@ -682,7 +682,7 @@ DEF FLY Robot {
                           }
                         ]
                         endPoint DEF RF_TARSUS TouchSensor {
-                          translation -0.0059600799238518545 -0.059401997335237336 0
+                          translation -0.005960079923851856 -0.05940199733523735 0
                           rotation 0 0 -1 0.1999999999999989
                           children [
                             USE F_TARSUS_SHAPE
@@ -752,7 +752,7 @@ DEF FLY Robot {
         }
       ]
       endPoint DEF RM_COXA TouchSensor {
-        translation -0.02099334665397531 -0.05990033288920625 0
+        translation -0.02099334665397531 -0.05990033288920626 0
         rotation 0 0 -1 0.1999999999999989
         children [
           USE M_COXA_SHAPE
@@ -803,7 +803,7 @@ DEF FLY Robot {
                           }
                         ]
                         endPoint DEF RM_TARSUS TouchSensor {
-                          translation -0.01034320723314686 -0.06343677711939613 0
+                          translation -0.010343207233146858 -0.06343677711939613 0
                           rotation 0 0 -0.9999999999999999 0.3000000000000006
                           children [
                             USE M_TARSUS_SHAPE
@@ -892,7 +892,7 @@ DEF FLY Robot {
               }
             ]
             endPoint DEF RR_FEMUR TouchSensor {
-              translation -0.014116061834875859 -0.03063339037274191 0
+              translation -0.014116061834875853 -0.030633390372741903 0
               rotation 0 0 -1 0.6000000000000003
               children [
                 USE R_FEMUR_SHAPE
@@ -909,7 +909,7 @@ DEF FLY Robot {
                     }
                   ]
                   endPoint DEF RR_TIBIA TouchSensor {
-                    translation 0.014382766158126063 -0.05132747685671112 0
+                    translation 0.014382766158126057 -0.051327476856711116 0
                     rotation 0 0 1 0.5000000000000004
                     children [
                       USE R_TIBIA_SHAPE
@@ -926,7 +926,7 @@ DEF FLY Robot {
                           }
                         ]
                         endPoint DEF RR_TARSUS TouchSensor {
-                          translation -0.008940119885777774 -0.07410299600285597 0
+                          translation -0.008940119885777777 -0.074102996002856 0
                           rotation 0 0 -1 0.1999999999999989
                           children [
                             USE R_TARSUS_SHAPE
@@ -967,7 +967,7 @@ DEF FLY Robot {
   ]
   boundingObject USE THORAX_SHAPE
   physics Physics {
-    density 1
+    density 0.2
   }
   controller "oscillator_leg_controller"
   supervisor TRUE
