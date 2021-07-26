@@ -5,3 +5,6 @@
 # Project files #
 .vscode
 *.wbproj
+
+# Output files #
+sensor_values.txt

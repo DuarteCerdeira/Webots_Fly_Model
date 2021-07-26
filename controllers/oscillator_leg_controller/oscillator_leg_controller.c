@@ -5,16 +5,19 @@
  * Author:        Duarte Cerdeira
  */
 
+#include <stdio.h>
 #include <math.h>
 
 #include <webots/robot.h>
 #include <webots/motor.h>
+#include <webots/touch_sensor.h>
 
 #define TIME_STEP 64
-#define ANGULAR_VELOCITY 0.2
+#define ANGULAR_VELOCITY 0.5
 
 #define PI 3.14159265359
 
+#define N_LEGS 6
 #define N_LEG_JOINTS 6
 
 
@@ -62,6 +65,17 @@ static const char *rr_joints[N_LEG_JOINTS] = {
   "rr_ct_flex/ext" , "rr_ft_flex/ext" , "rr_tt_flex/ext"
 };
 
+// Claw touch sensors
+static WbDeviceTag claw[N_LEGS];
+static const char *claw_sensors[N_LEGS] = {
+  "lf_claw", "lm_claw", "lr_claw",
+  "rf_claw", "rm_claw", "rr_claw"
+};
+
+// File to save touch sensor values
+static FILE *file;
+static const char *file_name = "sensor_values.txt";
+
 /*
  * Function:    amp()
  * Description: Calculates the amplitude of the joint movement
@@ -105,6 +119,12 @@ double oscillator(const double upper_limit, const double lower_limit, double t, 
 int main(int argc, char **argv) {
   wb_robot_init();
 
+  // Open the file for writing test results
+  file = fopen(file_name, "w");
+
+  fprintf(file, "==========TEST RESULT==========\n");
+  fprintf(file, "| LF | LM | LR | RF | RM | RR |\n");
+
   // Define the joint limits and phase lags for each joint
 
   // Front legs
@@ -113,13 +133,13 @@ int main(int argc, char **argv) {
   const int front_phases[N_LEG_JOINTS]          = {0, 0, PI/2, PI, 0, 0};
 
   // Middle legs
-  const double middle_upper_limits[N_LEG_JOINTS] = {0.0, 0.2, 0.2, 1.6, -1.2, 0.5};
-  const double middle_lower_limits[N_LEG_JOINTS] = {0.0, -0.4, 0.0, 1.4, -1.4, 0.5};
+  const double middle_upper_limits[N_LEG_JOINTS] = {0.0, 0.2, 0.4, 1.6, -1.2, 0.5};
+  const double middle_lower_limits[N_LEG_JOINTS] = {0.0, -0.4, 0.0, 1.2, -1.6, 0.5};
   const int middle_phases[N_LEG_JOINTS]          = {0, 0, PI/2, 0, PI, 0};
 
   // Rear legs
   const double rear_upper_limits[N_LEG_JOINTS] = {0.2, -1.0, 0.0, 2.6, -0.8, 0.4};
-  const double rear_lower_limits[N_LEG_JOINTS] = {-0.8, -0.8, -0.6, 0.6, -2.2, 0.2};
+  const double rear_lower_limits[N_LEG_JOINTS] = {-0.6, -0.8, -0.6, 0.6, -2.2, 0.2};
   const int rear_phases[N_LEG_JOINTS]          = {0, 0, PI, 0, PI, 0};
 
   // Phase lag between each leg to simulate gait
@@ -134,12 +154,30 @@ int main(int argc, char **argv) {
     rm_leg[i] = wb_robot_get_device(rm_joints[i]);
     rr_leg[i] = wb_robot_get_device(rr_joints[i]);
   }
+  
+  // Get sensors
+  for (int i = 0; i < N_LEGS; i++) {
+    claw[i] = wb_robot_get_device(claw_sensors[i]);
+    wb_touch_sensor_enable(claw[i], TIME_STEP);
+  }
 
   int time = 0;
 
   // Feedback loop
   while (wb_robot_step(TIME_STEP) != -1) {
     time += TIME_STEP;
+
+    /* for (int i = 0; i < N_LEGS; i++)
+      fprintf(file, "|  %.0lf ", wb_touch_sensor_get_value(claw[i])); */
+
+    for (int i = 0; i < N_LEGS; i++) {
+      if (wb_touch_sensor_get_value(claw[i]))
+        fprintf(file, "| ++ ");
+      else
+        fprintf(file, "|    ");
+    }
+    
+    fprintf(file, "|\n"); 
 
     for (int i = 0; i < N_LEG_JOINTS; i++) {
       wb_motor_set_position(lf_leg[i], oscillator(front_upper_limits[i], front_lower_limits[i], ANGULAR_VELOCITY * time, front_phases[i]));
@@ -152,6 +190,8 @@ int main(int argc, char **argv) {
       wb_motor_set_position(rr_leg[i], oscillator(rear_upper_limits[i], rear_lower_limits[i], ANGULAR_VELOCITY * time, rear_phases[i] + gait[4]));
     }
   };
+
+  fclose(file);
 
   wb_robot_cleanup();
 
