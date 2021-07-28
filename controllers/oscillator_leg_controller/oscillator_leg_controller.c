@@ -6,20 +6,38 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 
+#include <webots/supervisor.h>
 #include <webots/robot.h>
 #include <webots/motor.h>
 #include <webots/touch_sensor.h>
 
 #define TIME_STEP 64
 #define ANGULAR_VELOCITY 0.5
+#define SIMULATION_RUN_TIME 5.0
 
 #define PI 3.14159265359
 
 #define N_LEGS 6
 #define N_LEG_JOINTS 6
 
+#define SENSOR_FILE_NAME "aux_files\\sensor_values.txt"
+#define PARAMETERS_FILE_NAME "aux_files\\controller_parameters.txt"
+#define RESULTS_FILE_NAME "aux_files\\simulation_results.txt"
+
+// File to save touch sensor values
+static FILE *sensor_output;
+static const char *sensor_file_name = SENSOR_FILE_NAME;
+
+// File to fetch leg parameters
+static FILE *parameters_input;
+static const char *parameters_file_name = PARAMETERS_FILE_NAME;
+
+// File to save simulation results
+static FILE *results_output;
+static const char *results_file_name = RESULTS_FILE_NAME;
 
 // Initialize robot information
 
@@ -72,18 +90,15 @@ static const char *claw_sensors[N_LEGS] = {
   "rf_claw", "rm_claw", "rr_claw"
 };
 
-// File to save touch sensor values
-static FILE *file;
-static const char *file_name = "sensor_values.txt";
-
 /*
  * Function:    amp()
  * Description: Calculates the amplitude of the joint movement
  * Arguments:   double upper_limit - upper joint limit (radian)
- *              dobule lower_limit - lower joint limit (radian)
+ *              double lower_limit - lower joint limit (radian)
  * Returns:     amplitude of joint movement
  */
-double amp(const double upper_limit, const double lower_limit) {
+double amp(const double upper_limit, const double lower_limit)
+{
   return (upper_limit - lower_limit) / 2;
 }
 
@@ -94,7 +109,8 @@ double amp(const double upper_limit, const double lower_limit) {
  *              double lower_limit - lower joint limit (radian)
  * Returns:     average position of the joint
  */
-double average(const double upper_limit, const double lower_limit) {
+double average(const double upper_limit, const double lower_limit)
+{
   return (lower_limit + upper_limit) / 2;
 }
 
@@ -107,8 +123,29 @@ double average(const double upper_limit, const double lower_limit) {
  *              double t           - time variable
  * Returns:     instant position of the joint 
  */
-double oscillator(const double upper_limit, const double lower_limit, double t, const double phase) {
+double oscillator(const double upper_limit, const double lower_limit, double t, const double phase)
+{
   return amp(upper_limit, lower_limit) * cos(t + phase) + average(upper_limit, lower_limit);
+}
+
+/*
+ * Function:    cleanup()
+ * Description: performs the cleanup of the program and exits in case of failure
+ * Arguments:   int status - determines the output of the program (EXIT_FAILURE / EXIT_SUCCESS)
+ * Returns:     None
+ */
+void cleanup(int status)
+{
+  fclose(sensor_output);
+  fclose(parameters_input);
+  fclose(results_output);
+
+  wb_robot_cleanup();
+
+  if (status == EXIT_FAILURE) {
+    printf("Something went wrong. Shutting down\n");
+    exit(EXIT_FAILURE);
+  }
 }
 
 /* 
@@ -119,11 +156,22 @@ double oscillator(const double upper_limit, const double lower_limit, double t, 
 int main(int argc, char **argv) {
   wb_robot_init();
 
-  // Open the file for writing test results
-  file = fopen(file_name, "w");
+  WbNodeRef fly_node = wb_supervisor_node_get_from_def("FLY");
+  if (fly_node == NULL)
+    cleanup(EXIT_FAILURE);
+  WbFieldRef fly_translation = wb_supervisor_node_get_field(fly_node, "translation");
 
-  fprintf(file, "==========TEST RESULT==========\n");
-  fprintf(file, "| LF | LM | LR | RF | RM | RR |\n");
+  // Open files
+
+  sensor_output = fopen(sensor_file_name, "w");
+  parameters_input = fopen(parameters_file_name, "r");
+  results_output = fopen(results_file_name, "w");
+
+  if (sensor_output == NULL|| parameters_input == NULL || results_output == NULL)
+    cleanup(EXIT_FAILURE);
+
+  fprintf(sensor_output, "==========TEST RESULT==========\n");
+  fprintf(sensor_output, "| LF | LM | LR | RF | RM | RR |\n");
 
   // Define the joint limits and phase lags for each joint
 
@@ -143,7 +191,13 @@ int main(int argc, char **argv) {
   const int rear_phases[N_LEG_JOINTS]          = {0, 0, PI, 0, PI, 0};
 
   // Phase lag between each leg to simulate gait
-  double gait[5] = {PI, PI, 0, 0, PI};
+  double gait[N_LEGS - 1];
+
+  for (int i = 0; i < N_LEGS - 1; i++) {
+    if (fscanf(parameters_input, "%lf", &gait[i]) < 1)
+      cleanup(EXIT_FAILURE);
+    gait[i] *= (2*PI / 360.0);
+  }
 
   // Get motors
   for (int i = 0; i < N_LEG_JOINTS; i++) {
@@ -168,16 +222,16 @@ int main(int argc, char **argv) {
     time += TIME_STEP;
 
     /* for (int i = 0; i < N_LEGS; i++)
-      fprintf(file, "|  %.0lf ", wb_touch_sensor_get_value(claw[i])); */
+      fprintf(sensor_output, "|  %.0lf ", wb_touch_sensor_get_value(claw[i])); */
 
     for (int i = 0; i < N_LEGS; i++) {
       if (wb_touch_sensor_get_value(claw[i]))
-        fprintf(file, "| ++ ");
+        fprintf(sensor_output, "| ++ ");
       else
-        fprintf(file, "|    ");
+        fprintf(sensor_output, "|    ");
     }
     
-    fprintf(file, "|\n"); 
+    fprintf(sensor_output, "|\n"); 
 
     for (int i = 0; i < N_LEG_JOINTS; i++) {
       wb_motor_set_position(lf_leg[i], oscillator(front_upper_limits[i], front_lower_limits[i], ANGULAR_VELOCITY * time, front_phases[i]));
@@ -189,11 +243,18 @@ int main(int argc, char **argv) {
       wb_motor_set_position(lr_leg[i], oscillator(rear_upper_limits[i], rear_lower_limits[i], ANGULAR_VELOCITY * time, rear_phases[i] + gait[3]));
       wb_motor_set_position(rr_leg[i], oscillator(rear_upper_limits[i], rear_lower_limits[i], ANGULAR_VELOCITY * time, rear_phases[i] + gait[4]));
     }
+
+    if ((double) time / 1000 > SIMULATION_RUN_TIME) {
+      const double *trans_values = wb_supervisor_field_get_sf_vec3f(fly_translation);
+      double position = trans_values[2];
+      double av_velocity = position / ((double) time / 1000);
+      fprintf(results_output, "%lf", av_velocity);
+      wb_supervisor_simulation_quit(EXIT_SUCCESS);
+      break;
+    }
   };
 
-  fclose(file);
-
-  wb_robot_cleanup();
-
+  cleanup(EXIT_SUCCESS);
+  
   return 0;
 }

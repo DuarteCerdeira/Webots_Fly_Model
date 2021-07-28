@@ -19,7 +19,7 @@ TexturedBackground {
 }
 TexturedBackgroundLight {
 }
-SixLeggedFly {
+DEF FLY SixLeggedFly {
   translation 0 0.2 0
   controller "oscillator_leg_controller"
 }

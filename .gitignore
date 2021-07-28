@@ -1,10 +1,9 @@
-# Compiled source # 
-*.exe
+# Compiled source #
 *.o
 
 # Project files #
 .vscode
 *.wbproj
 
-# Output files #
-sensor_values.txt
+# Auxiliary files #
+aux_files/
