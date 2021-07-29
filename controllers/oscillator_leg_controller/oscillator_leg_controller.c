@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <math.h>
 
 #include <webots/supervisor.h>
@@ -23,21 +24,18 @@
 #define N_LEGS 6
 #define N_LEG_JOINTS 6
 
-#define SENSOR_FILE_NAME "aux_files\\sensor_values.txt"
-#define PARAMETERS_FILE_NAME "aux_files\\controller_parameters.txt"
-#define RESULTS_FILE_NAME "aux_files\\simulation_results.txt"
+#define SENSOR_FILE_NAME "aux_files\\sensor_values_"
+#define PARAMETERS_FILE_NAME "aux_files\\controller_parameters_"
+#define RESULTS_FILE_NAME "aux_files\\simulation_results_"
 
 // File to save touch sensor values
 static FILE *sensor_output;
-static const char *sensor_file_name = SENSOR_FILE_NAME;
 
 // File to fetch leg parameters
 static FILE *parameters_input;
-static const char *parameters_file_name = PARAMETERS_FILE_NAME;
 
 // File to save simulation results
 static FILE *results_output;
-static const char *results_file_name = RESULTS_FILE_NAME;
 
 // Initialize robot information
 
@@ -91,13 +89,13 @@ static const char *claw_sensors[N_LEGS] = {
 };
 
 /*
- * Function:    amp()
+ * Function:    amplitude()
  * Description: Calculates the amplitude of the joint movement
  * Arguments:   double upper_limit - upper joint limit (radian)
  *              double lower_limit - lower joint limit (radian)
  * Returns:     amplitude of joint movement
  */
-double amp(const double upper_limit, const double lower_limit)
+double amplitude(const double upper_limit, const double lower_limit)
 {
   return (upper_limit - lower_limit) / 2;
 }
@@ -125,7 +123,7 @@ double average(const double upper_limit, const double lower_limit)
  */
 double oscillator(const double upper_limit, const double lower_limit, double t, const double phase)
 {
-  return amp(upper_limit, lower_limit) * cos(t + phase) + average(upper_limit, lower_limit);
+  return amplitude(upper_limit, lower_limit) * cos(t + phase) + average(upper_limit, lower_limit);
 }
 
 /*
@@ -156,16 +154,42 @@ void cleanup(int status)
 int main(int argc, char **argv) {
   wb_robot_init();
 
-  WbNodeRef fly_node = wb_supervisor_node_get_from_def("FLY");
+  WbNodeRef fly_node = wb_supervisor_node_get_self();
   if (fly_node == NULL)
     cleanup(EXIT_FAILURE);
   WbFieldRef fly_translation = wb_supervisor_node_get_field(fly_node, "translation");
 
+  const char *fly_name = wb_robot_get_name();
+
+  char *parameters_file_name = (char *) malloc(strlen(PARAMETERS_FILE_NAME) + strlen(fly_name) + strlen(".txt") + 1);
+
+  char *results_file_name = (char *) malloc(strlen(RESULTS_FILE_NAME) + strlen(fly_name) + strlen(".txt") + 1);
+
+  char *sensor_file_name = (char *) malloc(strlen(SENSOR_FILE_NAME) + strlen(fly_name) + strlen(".txt") + 1);
+
+  if (parameters_file_name == NULL || results_file_name == NULL || sensor_file_name == NULL)
+    cleanup(EXIT_FAILURE);
+  
   // Open files
 
-  sensor_output = fopen(sensor_file_name, "w");
+  parameters_file_name = strcpy(parameters_file_name, PARAMETERS_FILE_NAME);
+  parameters_file_name = strcat(parameters_file_name, fly_name);
+  parameters_file_name = strcat(parameters_file_name, ".txt");
   parameters_input = fopen(parameters_file_name, "r");
+
+  results_file_name = strcpy(results_file_name, RESULTS_FILE_NAME);
+  results_file_name = strcat(results_file_name, fly_name);
+  results_file_name = strcat(results_file_name, ".txt");
   results_output = fopen(results_file_name, "w");
+
+  sensor_file_name = strcpy(sensor_file_name, SENSOR_FILE_NAME);
+  sensor_file_name = strcat(sensor_file_name, fly_name);
+  sensor_file_name = strcat(sensor_file_name, ".txt");
+  sensor_output = fopen(sensor_file_name, "w");
+
+  free(parameters_file_name);
+  free(results_file_name);
+  free(sensor_file_name);
 
   if (sensor_output == NULL|| parameters_input == NULL || results_output == NULL)
     cleanup(EXIT_FAILURE);

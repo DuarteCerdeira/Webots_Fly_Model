@@ -9,9 +9,10 @@ WorldInfo {
   ]
 }
 Viewpoint {
-  orientation 2.2390967219443817e-05 0.9999999996901111 1.088220945625859e-05 1.5707894853260416
-  position 1.0634040744451485 0.15628582528923093 0.10564445064063242
+  orientation 1 0 0 -1.5707996938995747
+  position 0 6 0.5
   follow "robot"
+  followType "None"
 }
 Floor {
 }
@@ -19,7 +20,28 @@ TexturedBackground {
 }
 TexturedBackgroundLight {
 }
-DEF FLY SixLeggedFly {
+DEF FLY0 SixLeggedFly {
   translation 0 0.2 0
   controller "oscillator_leg_controller"
+  name "fly0"
+}
+DEF FLY1 SixLeggedFly {
+  translation 1 0.2 0
+  controller "oscillator_leg_controller"
+  name "fly1"
+}
+DEF FLY2 SixLeggedFly {
+  translation -1 0.2 0
+  controller "oscillator_leg_controller"
+  name "fly2"
+}
+DEF FLY3 SixLeggedFly {
+  translation 2 0.2 0
+  controller "oscillator_leg_controller"
+  name "fly3"
+}
+DEF FLY4 SixLeggedFly {
+  translation -2 0.2 0
+  controller "oscillator_leg_controller"
+  name "fly4"
 }
