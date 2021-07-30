@@ -1,3 +1,11 @@
+#
+# File:         optimizer.py
+# Date:         July 2021
+# Description:  Optimizer algorithm to compute most optimal gait pattern for a fly
+#               using a custom-made Webots fly model
+# Author:       Duarte Cerdeira
+#
+
 from os import write
 from time import time
 from random import Random
@@ -12,14 +20,15 @@ ARGUMENTS = [
     "worlds\\fly_test.wbt", 
     "--mode=realtime"
 ]
+WEBOTS_CALL = WEBOTS_APP + ARGUMENTS
 
 AUX_FILES_PATH = "controllers\\oscillator_leg_controller\\aux_files\\"
 
-WEBOTS_CALL = WEBOTS_APP + ARGUMENTS
-PARAM_FILE_NAME = AUX_FILES_PATH + "controller_parameters_"
-RESULTS_FILE_NAME = AUX_FILES_PATH + "simulation_results_"
+PARAM_FILE_PATH = AUX_FILES_PATH + "controller_parameters\\"
+RESULTS_FILE_PATH = AUX_FILES_PATH + "simulation_results\\"
 
 PARTICLE_SIZE = 5
+N_PARTICLES = 5
 
 def generator(random, args):
     """ Generates candidate solutions to the problem
@@ -41,14 +50,13 @@ def evaluate(candidates, args):
     """ Evaluates the candidate solutions
     
         Evaluates the candidates given according to their resulting average
-        speed simulated in webots
+        speed simulated in Webots
     """
     fitness = []
     size = args.get("size", 5)
 
     for i in range(size):
-        params_file = open(PARAM_FILE_NAME + "fly{}".format(i) + ".txt", "w")
-
+        params_file = open(PARAM_FILE_PATH + "fly{}".format(i) + ".txt", "w")
         for x in candidates[i]:
             params_file.write("{} ".format(x))
         params_file.close()
@@ -56,8 +64,7 @@ def evaluate(candidates, args):
     run(WEBOTS_CALL)
 
     for i in range(size):
-
-        results_file = open(RESULTS_FILE_NAME + "fly{}".format(i) + ".txt", "r")
+        results_file = open(RESULTS_FILE_PATH + "fly{}".format(i) + ".txt", "r")
         fitness.append(float(results_file.read()))
         results_file.close()
 
@@ -74,9 +81,9 @@ final_pop = ea.evolve(generator=generator,
                       pop_size=5,
                       bounder=ec.Bounder(0, 180),
                       maximize=True,
-                      max_evaluations=200,
-                      num_inputs=5,
-                      size=5)
+                      max_evaluations=10,
+                      num_inputs=PARTICLE_SIZE,
+                      size=N_PARTICLES)
 
 best = max(final_pop)
 

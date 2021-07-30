@@ -24,9 +24,9 @@
 #define N_LEGS 6
 #define N_LEG_JOINTS 6
 
-#define SENSOR_FILE_NAME "aux_files\\sensor_values_"
-#define PARAMETERS_FILE_NAME "aux_files\\controller_parameters_"
-#define RESULTS_FILE_NAME "aux_files\\simulation_results_"
+#define SENSOR_FILE_PATH "aux_files\\sensor_values\\"
+#define PARAMETERS_FILE_PATH "aux_files\\controller_parameters\\"
+#define RESULTS_FILE_PATH "aux_files\\simulation_results\\"
 
 // File to save touch sensor values
 static FILE *sensor_output;
@@ -88,9 +88,26 @@ static const char *claw_sensors[N_LEGS] = {
   "rf_claw", "rm_claw", "rr_claw"
 };
 
+// Define the joint limits and phase lags for each joint
+
+// Front legs
+const double front_upper_limits[N_LEG_JOINTS] = {0.2, 1.2, 0.4, 2.2, -1.0, 0.2};
+const double front_lower_limits[N_LEG_JOINTS] = {-0.2, 0.8, 0.0, 1.4, -2.2, 0.2};
+const int front_phases[N_LEG_JOINTS]          = {0, 0, PI/2, PI, 0, 0};
+
+// Middle legs
+const double middle_upper_limits[N_LEG_JOINTS] = {0.0, 0.2, 0.4, 1.6, -1.2, 0.5};
+const double middle_lower_limits[N_LEG_JOINTS] = {0.0, -0.4, 0.0, 1.2, -1.6, 0.5};
+const int middle_phases[N_LEG_JOINTS]          = {0, 0, PI/2, 0, PI, 0};
+
+// Rear legs
+const double rear_upper_limits[N_LEG_JOINTS] = {0.2, -1.0, 0.0, 2.6, -0.8, 0.4};
+const double rear_lower_limits[N_LEG_JOINTS] = {-0.6, -0.8, -0.6, 0.6, -2.2, 0.2};
+const int rear_phases[N_LEG_JOINTS]          = {0, 0, PI, 0, PI, 0};
+
 /*
  * Function:    amplitude()
- * Description: Calculates the amplitude of the joint movement
+ * Description: calculates the amplitude of the joint movement
  * Arguments:   double upper_limit - upper joint limit (radian)
  *              double lower_limit - lower joint limit (radian)
  * Returns:     amplitude of joint movement
@@ -102,7 +119,7 @@ double amplitude(const double upper_limit, const double lower_limit)
 
 /*
  * Function:    average()
- * Description: Calculates the average position of the joint movement
+ * Description: calculates the average position of the joint movement
  * Arguments:   double upper_limit - upper joint limit (radian)
  *              double lower_limit - lower joint limit (radian)
  * Returns:     average position of the joint
@@ -127,6 +144,61 @@ double oscillator(const double upper_limit, const double lower_limit, double t, 
 }
 
 /*
+ * Function:    actuate_motors()
+ * Description: actuates the motors to follow an oscillating movement pattern according to the gait provided
+ * Arguments:   double t - time variable
+ *              double gait[] - phase lags that define the robot gait pattern
+ * Returns:     None
+ */
+void actuate_motors(double t, double gait[])
+{
+  for (int i = 0; i < N_LEG_JOINTS; i++) {
+    wb_motor_set_position(lf_leg[i], oscillator(front_upper_limits[i], front_lower_limits[i], ANGULAR_VELOCITY * t, front_phases[i]));
+    wb_motor_set_position(rf_leg[i], oscillator(front_upper_limits[i], front_lower_limits[i], ANGULAR_VELOCITY * t, front_phases[i] + gait[0]));
+
+    wb_motor_set_position(lm_leg[i], oscillator(middle_upper_limits[i], middle_lower_limits[i], ANGULAR_VELOCITY * t, middle_phases[i] + gait[1]));
+    wb_motor_set_position(rm_leg[i], oscillator(middle_upper_limits[i], middle_lower_limits[i], ANGULAR_VELOCITY * t, middle_phases[i] + gait[2]));
+
+    wb_motor_set_position(lr_leg[i], oscillator(rear_upper_limits[i], rear_lower_limits[i], ANGULAR_VELOCITY * t, rear_phases[i] + gait[3]));
+    wb_motor_set_position(rr_leg[i], oscillator(rear_upper_limits[i], rear_lower_limits[i], ANGULAR_VELOCITY * t, rear_phases[i] + gait[4]));
+  }
+
+  return;
+}
+
+/*
+ * Function:    write_sensor_values()
+ * Description: writes the sensor values in a text file
+ * Arguments:   None
+ * Returns:     None
+ */
+void write_sensor_values(void)
+{
+  for (int i = 0; i < N_LEGS; i++) {
+    if (wb_touch_sensor_get_value(claw[i]))
+      fprintf(sensor_output, "| ++ ");
+    else
+      fprintf(sensor_output, "|    ");
+  } 
+  fprintf(sensor_output, "|\n"); 
+  return;
+}
+
+/*
+ * Function:    calculate_velocity()
+ * Description: calculates the average forward velocity of the robot
+ * Arguments:   double time - time passed since the beginning of the simulation
+ *              WbFieldRef translation[] - translation vector of the robot position
+ * Returns:     average forward velocity of the robot
+ */
+double calculate_velocity(double time, WbFieldRef translation)
+{
+  const double *trans_values = wb_supervisor_field_get_sf_vec3f(translation);
+  double z_position = trans_values[2];
+  return z_position / ((double) time / 1000);
+}
+
+/*
  * Function:    cleanup()
  * Description: performs the cleanup of the program and exits in case of failure
  * Arguments:   int status - determines the output of the program (EXIT_FAILURE / EXIT_SUCCESS)
@@ -134,16 +206,37 @@ double oscillator(const double upper_limit, const double lower_limit, double t, 
  */
 void cleanup(int status)
 {
-  fclose(sensor_output);
-  fclose(parameters_input);
-  fclose(results_output);
+  if (sensor_output && parameters_input && results_output) {
+    fclose(sensor_output);
+    fclose(parameters_input);
+    fclose(results_output);
+  }
 
   wb_robot_cleanup();
 
-  if (status == EXIT_FAILURE) {
-    printf("Something went wrong. Shutting down\n");
-    exit(EXIT_FAILURE);
+  if (status) {
+    printf("Something went wrong. Shutting down...\n");
+    exit(status);
   }
+}
+/*
+ * Function:    make_file_name()
+ * Description: generates the correct file name using a common file path and a unique identifier for each robot that uses this controller
+ * Arguments:   char * file_path - common path for the files 
+ *              char * identifier - unique identifier to distinguish files
+ * Returns:     unique file name
+ */
+char *make_file_name(const char *file_path, const char *identifier)
+{
+  char *str = (char *) malloc(strlen(file_path) + strlen(identifier) + strlen(".txt") + 1);
+  if(str == NULL)
+    cleanup(EXIT_FAILURE);
+
+  str = strcpy(str, file_path);
+  str = strcat(str, identifier);
+  str = strcat(str, ".txt");
+
+  return str;
 }
 
 /* 
@@ -154,76 +247,48 @@ void cleanup(int status)
 int main(int argc, char **argv) {
   wb_robot_init();
 
+  // Get the robot position
+
   WbNodeRef fly_node = wb_supervisor_node_get_self();
   if (fly_node == NULL)
     cleanup(EXIT_FAILURE);
   WbFieldRef fly_translation = wb_supervisor_node_get_field(fly_node, "translation");
 
-  const char *fly_name = wb_robot_get_name();
-
-  char *parameters_file_name = (char *) malloc(strlen(PARAMETERS_FILE_NAME) + strlen(fly_name) + strlen(".txt") + 1);
-
-  char *results_file_name = (char *) malloc(strlen(RESULTS_FILE_NAME) + strlen(fly_name) + strlen(".txt") + 1);
-
-  char *sensor_file_name = (char *) malloc(strlen(SENSOR_FILE_NAME) + strlen(fly_name) + strlen(".txt") + 1);
-
-  if (parameters_file_name == NULL || results_file_name == NULL || sensor_file_name == NULL)
-    cleanup(EXIT_FAILURE);
-  
   // Open files
 
-  parameters_file_name = strcpy(parameters_file_name, PARAMETERS_FILE_NAME);
-  parameters_file_name = strcat(parameters_file_name, fly_name);
-  parameters_file_name = strcat(parameters_file_name, ".txt");
+  const char *fly_name = wb_robot_get_name();
+  char *parameters_file_name = make_file_name(PARAMETERS_FILE_PATH, fly_name);
+  char *results_file_name = make_file_name(RESULTS_FILE_PATH, fly_name);
+  char *sensor_file_name = make_file_name(SENSOR_FILE_PATH, fly_name);
+
+  if (parameters_file_name == NULL || results_file_name == NULL || sensor_file_name == NULL) // Check if the memory was allocated correctly
+    cleanup(EXIT_FAILURE);
+
   parameters_input = fopen(parameters_file_name, "r");
-
-  results_file_name = strcpy(results_file_name, RESULTS_FILE_NAME);
-  results_file_name = strcat(results_file_name, fly_name);
-  results_file_name = strcat(results_file_name, ".txt");
   results_output = fopen(results_file_name, "w");
-
-  sensor_file_name = strcpy(sensor_file_name, SENSOR_FILE_NAME);
-  sensor_file_name = strcat(sensor_file_name, fly_name);
-  sensor_file_name = strcat(sensor_file_name, ".txt");
   sensor_output = fopen(sensor_file_name, "w");
+
+  if (sensor_output == NULL|| parameters_input == NULL || results_output == NULL) // Check if the files were open
+    cleanup(EXIT_FAILURE);
+
+  // Free the allocated memory
 
   free(parameters_file_name);
   free(results_file_name);
   free(sensor_file_name);
 
-  if (sensor_output == NULL|| parameters_input == NULL || results_output == NULL)
-    cleanup(EXIT_FAILURE);
+  // Get gait pattern
 
-  fprintf(sensor_output, "==========TEST RESULT==========\n");
-  fprintf(sensor_output, "| LF | LM | LR | RF | RM | RR |\n");
-
-  // Define the joint limits and phase lags for each joint
-
-  // Front legs
-  const double front_upper_limits[N_LEG_JOINTS] = {0.2, 1.2, 0.4, 2.2, -1.0, 0.2};
-  const double front_lower_limits[N_LEG_JOINTS] = {-0.2, 0.8, 0.0, 1.4, -2.2, 0.2};
-  const int front_phases[N_LEG_JOINTS]          = {0, 0, PI/2, PI, 0, 0};
-
-  // Middle legs
-  const double middle_upper_limits[N_LEG_JOINTS] = {0.0, 0.2, 0.4, 1.6, -1.2, 0.5};
-  const double middle_lower_limits[N_LEG_JOINTS] = {0.0, -0.4, 0.0, 1.2, -1.6, 0.5};
-  const int middle_phases[N_LEG_JOINTS]          = {0, 0, PI/2, 0, PI, 0};
-
-  // Rear legs
-  const double rear_upper_limits[N_LEG_JOINTS] = {0.2, -1.0, 0.0, 2.6, -0.8, 0.4};
-  const double rear_lower_limits[N_LEG_JOINTS] = {-0.6, -0.8, -0.6, 0.6, -2.2, 0.2};
-  const int rear_phases[N_LEG_JOINTS]          = {0, 0, PI, 0, PI, 0};
-
-  // Phase lag between each leg to simulate gait
   double gait[N_LEGS - 1];
 
   for (int i = 0; i < N_LEGS - 1; i++) {
-    if (fscanf(parameters_input, "%lf", &gait[i]) < 1)
+    if (fscanf(parameters_input, "%lf", &gait[i]) < 1) // Check if the values were read properly
       cleanup(EXIT_FAILURE);
     gait[i] *= (2*PI / 360.0);
   }
 
   // Get motors
+
   for (int i = 0; i < N_LEG_JOINTS; i++) {
     lf_leg[i] = wb_robot_get_device(lf_joints[i]);
     lm_leg[i] = wb_robot_get_device(lm_joints[i]);
@@ -234,51 +299,35 @@ int main(int argc, char **argv) {
   }
   
   // Get sensors
+  
   for (int i = 0; i < N_LEGS; i++) {
     claw[i] = wb_robot_get_device(claw_sensors[i]);
     wb_touch_sensor_enable(claw[i], TIME_STEP);
   }
 
-  int time = 0;
+  // Main feedback loop
+  // Read sensor values and actuate the motors according to the given gait pattern
 
-  // Feedback loop
-  while (wb_robot_step(TIME_STEP) != -1) {
-    time += TIME_STEP;
+  fprintf(sensor_output, "==========TEST RESULT==========\n");
+  fprintf(sensor_output, "| LF | LM | LR | RF | RM | RR |\n");
 
-    /* for (int i = 0; i < N_LEGS; i++)
-      fprintf(sensor_output, "|  %.0lf ", wb_touch_sensor_get_value(claw[i])); */
+  int time;
+  for (time = 0; time / 1000 < SIMULATION_RUN_TIME; time += TIME_STEP, wb_robot_step(TIME_STEP)) {
+    write_sensor_values();
 
-    for (int i = 0; i < N_LEGS; i++) {
-      if (wb_touch_sensor_get_value(claw[i]))
-        fprintf(sensor_output, "| ++ ");
-      else
-        fprintf(sensor_output, "|    ");
-    }
-    
-    fprintf(sensor_output, "|\n"); 
-
-    for (int i = 0; i < N_LEG_JOINTS; i++) {
-      wb_motor_set_position(lf_leg[i], oscillator(front_upper_limits[i], front_lower_limits[i], ANGULAR_VELOCITY * time, front_phases[i]));
-      wb_motor_set_position(rf_leg[i], oscillator(front_upper_limits[i], front_lower_limits[i], ANGULAR_VELOCITY * time, front_phases[i] + gait[0]));
-
-      wb_motor_set_position(lm_leg[i], oscillator(middle_upper_limits[i], middle_lower_limits[i], ANGULAR_VELOCITY * time, middle_phases[i] + gait[1]));
-      wb_motor_set_position(rm_leg[i], oscillator(middle_upper_limits[i], middle_lower_limits[i], ANGULAR_VELOCITY * time, middle_phases[i] + gait[2]));
-
-      wb_motor_set_position(lr_leg[i], oscillator(rear_upper_limits[i], rear_lower_limits[i], ANGULAR_VELOCITY * time, rear_phases[i] + gait[3]));
-      wb_motor_set_position(rr_leg[i], oscillator(rear_upper_limits[i], rear_lower_limits[i], ANGULAR_VELOCITY * time, rear_phases[i] + gait[4]));
-    }
-
-    if ((double) time / 1000 > SIMULATION_RUN_TIME) {
-      const double *trans_values = wb_supervisor_field_get_sf_vec3f(fly_translation);
-      double position = trans_values[2];
-      double av_velocity = position / ((double) time / 1000);
-      fprintf(results_output, "%lf", av_velocity);
-      wb_supervisor_simulation_quit(EXIT_SUCCESS);
-      break;
-    }
+    actuate_motors(time, gait);
   };
+
+  // Calculate the average velocity of the robot at the end of the simulation
+
+  double av_velocity = calculate_velocity(time, fly_translation);
+  fprintf(results_output, "%lf", av_velocity);
+
+  // Cleanup code
+
+  wb_supervisor_simulation_quit(EXIT_SUCCESS);
 
   cleanup(EXIT_SUCCESS);
   
-  return 0;
+  return EXIT_SUCCESS;
 }
