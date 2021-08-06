@@ -1,0 +1,710 @@
+#VRML_SIM R2021b utf8
+WorldInfo {
+  basicTimeStep 16
+  coordinateSystem "NUE"
+  contactProperties [
+    ContactProperties {
+      material1 "fly_claw"
+    }
+  ]
+}
+Viewpoint {
+  orientation -0.25030163037413095 0.9591952347112773 0.131505116019223 1.0022080108193219
+  position 0.9741075794148006 0.5077612811042401 0.8205931411665555
+  follow "fly4"
+}
+Floor {
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+DEF FLY Robot {
+  translation 0 0.2 0
+  children [
+    DEF HEAD TouchSensor {
+      translation 0 -0.01 0.09
+      rotation 1 0 0 -0.1308996938995747
+      children [
+        DEF HEAD_SHAPE Group {
+          children [
+            Shape {
+              appearance DEF BODY_APPEARANCE PBRAppearance {
+                baseColor 0.666667 0.333333 0
+                roughness 1
+                metalness 0
+              }
+              geometry Capsule {
+                height 0.02
+                radius 0.04
+              }
+            }
+            Transform {
+              translation 0.03 0.01 0
+              children [
+                DEF EYE_SHAPE Shape {
+                  appearance DEF EYE_APPEARENCE PBRAppearance {
+                    baseColor 1 0 0
+                    roughness 1
+                    metalness 0
+                  }
+                  geometry Sphere {
+                    radius 0.03
+                    subdivision 2
+                  }
+                }
+              ]
+            }
+            Transform {
+              translation -0.03 0.01 0
+              children [
+                USE EYE_SHAPE
+              ]
+            }
+          ]
+        }
+      ]
+      name "head"
+      boundingObject USE HEAD_SHAPE
+      physics Physics {
+        density 0.2
+      }
+    }
+    DEF THORAX TouchSensor {
+      children [
+        DEF THORAX_SHAPE Shape {
+          appearance USE BODY_APPEARANCE
+          geometry Sphere {
+            radius 0.06
+            subdivision 2
+          }
+        }
+      ]
+      name "thorax"
+      boundingObject USE THORAX_SHAPE
+      physics Physics {
+        density 0.2
+      }
+    }
+    DEF ABDOMEN TouchSensor {
+      translation 0 -0.01 -0.11
+      rotation 1 0 0 -1.7017003061004252
+      children [
+        DEF ABDOMEN_SHAPE Shape {
+          appearance USE BODY_APPEARANCE
+          geometry Capsule {
+            height 0.07
+            radius 0.05
+          }
+        }
+      ]
+      name "abdomen"
+      boundingObject USE ABDOMEN_SHAPE
+      physics Physics {
+        density 0.1
+      }
+    }
+    DEF WINGS TouchSensor {
+      translation 0 0.045 -0.06
+      children [
+        DEF WINGS_SHAPE Group {
+          children [
+            Shape {
+              appearance DEF WINGS_APPEARENCE PBRAppearance {
+                transparency 0.5
+                roughness 1
+                metalness 0
+              }
+              geometry Cylinder {
+                height 0.005
+                radius 0.06
+              }
+            }
+            Transform {
+              translation 0 0 -0.075
+              children [
+                Shape {
+                  appearance USE WINGS_APPEARENCE
+                  geometry Box {
+                    size 0.12 0.005 0.15
+                  }
+                }
+              ]
+            }
+            Transform {
+              translation 0 0 -0.15
+              children [
+                Shape {
+                  appearance USE WINGS_APPEARENCE
+                  geometry Cylinder {
+                    height 0.005
+                    radius 0.06
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+      boundingObject USE WINGS_SHAPE
+      physics Physics {
+        density 0.05
+      }
+    }
+    DEF LF_TC BallJoint {
+      jointParameters BallJointParameters {
+        anchor 0.02 -0.04 0.04
+      }
+      jointParameters2 JointParameters {
+        position 0.7
+        axis -1 0 0
+      }
+      jointParameters3 JointParameters {
+        position 0.1
+      }
+      device [
+        RotationalMotor {
+          name "lf_tc_pro/re"
+          maxTorque 30
+        }
+      ]
+      device2 [
+        RotationalMotor {
+          name "lf_tc_rot"
+          minPosition -1.5707963267948966
+          maxPosition 1.5707963267948966
+          maxTorque 30
+        }
+      ]
+      device3 [
+        RotationalMotor {
+          name "lf_tc_abd/add"
+          maxTorque 30
+        }
+      ]
+      endPoint DEF LF_COXA TouchSensor {
+        translation 0.021527136175044873 -0.059900083305560514 0.041286289055625126
+        rotation -0.049517182829224966 -0.9895182326235243 0.13565292444423652 0.7068155531163084
+        children [
+          DEF F_COXA_SHAPE Shape {
+            appearance USE BODY_APPEARANCE
+            geometry Capsule {
+              height 0.04
+              radius 0.01
+            }
+          }
+          DEF LF_CT HingeJoint {
+            jointParameters HingeJointParameters {
+              position 1.5
+              axis 0 0 1
+              anchor 0 -0.02 0
+            }
+            device [
+              RotationalMotor {
+                name "lf_ct_flex/ext"
+                maxTorque 20
+              }
+            ]
+            endPoint DEF LF_FEMUR TouchSensor {
+              translation 0.029924849598121563 -0.02212211605003109 0
+              rotation 0 0 1 1.5
+              children [
+                DEF F_FEMUR_SHAPE Shape {
+                  appearance USE BODY_APPEARANCE
+                  geometry Capsule {
+                    height 0.06
+                    radius 0.009
+                  }
+                }
+                DEF LF_FT HingeJoint {
+                  jointParameters HingeJointParameters {
+                    position -1
+                    axis 0 0 1
+                    anchor 0 -0.03 0
+                  }
+                  device [
+                    RotationalMotor {
+                      name "lf_ft_flex/ext"
+                      maxTorque 20
+                    }
+                  ]
+                  endPoint DEF LF_TIBIA TouchSensor {
+                    translation -0.025244129544236896 -0.04620906917604419 0
+                    rotation 0 0 -1 0.9999999999999998
+                    children [
+                      DEF F_TIBIA_SHAPE Shape {
+                        appearance USE BODY_APPEARANCE
+                        geometry Capsule {
+                          height 0.06
+                          radius 0.008
+                        }
+                      }
+                      DEF LF_TT HingeJoint {
+                        jointParameters HingeJointParameters {
+                          position 0.2
+                          axis 0 0 1
+                          anchor 0 -0.03 0
+                        }
+                        device [
+                          RotationalMotor {
+                            name "lf_tt_flex/ext"
+                            maxTorque 20
+                          }
+                        ]
+                        endPoint DEF LF_TARSUS TouchSensor {
+                          translation 0.005960079923851863 -0.05940199733523739 0
+                          rotation 0 0 1 0.1999999999999989
+                          children [
+                            DEF F_TARSUS_SHAPE Shape {
+                              appearance USE BODY_APPEARANCE
+                              geometry Capsule {
+                                height 0.06
+                                radius 0.005
+                              }
+                            }
+                            DEF LF_CLAW TouchSensor {
+                              translation 0 -0.03 0
+                              children [
+                                DEF CLAW_SHAPE Shape {
+                                  appearance USE BODY_APPEARANCE
+                                  geometry Sphere {
+                                    radius 0.005
+                                    subdivision 2
+                                  }
+                                }
+                              ]
+                              name "lf_claw"
+                              contactMaterial "fly_claw"
+                              boundingObject USE CLAW_SHAPE
+                              physics DEF LEG_PHYSICS Physics {
+                                density -1
+                                mass 1
+                              }
+                            }
+                          ]
+                          name "lf_tarsus"
+                          contactMaterial "fly_claw"
+                          boundingObject USE F_TARSUS_SHAPE
+                          physics USE LEG_PHYSICS
+                        }
+                      }
+                    ]
+                    name "lf_tibia"
+                    boundingObject USE F_TIBIA_SHAPE
+                    physics USE LEG_PHYSICS
+                  }
+                }
+              ]
+              boundingObject USE F_FEMUR_SHAPE
+              physics USE LEG_PHYSICS
+              recognitionColors [
+                0 0 0
+              ]
+            }
+          }
+        ]
+        name "lf_coxa"
+        boundingObject USE F_COXA_SHAPE
+        physics USE LEG_PHYSICS
+      }
+    }
+    DEF LR_TC BallJoint {
+      jointParameters BallJointParameters {
+        position -0.5
+        anchor 0.02 -0.04 -0.04
+      }
+      jointParameters2 JointParameters {
+        position -1.1
+        axis -1 0 0
+      }
+      jointParameters3 JointParameters {
+        position 0.2
+      }
+      device [
+        RotationalMotor {
+          name "lr_tc_pro/re"
+          maxTorque 20
+        }
+      ]
+      device2 [
+        RotationalMotor {
+          name "lr_tc_rot"
+          minPosition -1.5707963267948966
+          maxPosition 1.5707963267948966
+          maxTorque 20
+        }
+      ]
+      device3 [
+        RotationalMotor {
+          name "lr_tc_abd/add"
+          maxTorque 20
+        }
+      ]
+      endPoint DEF LR_COXA TouchSensor {
+        translation 0.020901156378948554 -0.047752043762797625 -0.046252498275117765
+        rotation 0.4430260253034775 0.8214143162775432 0.3591746955425707 1.2567459740239846
+        children [
+          DEF R_COXA_SHAPE Shape {
+            appearance USE BODY_APPEARANCE
+            geometry Capsule {
+              height 0.02
+              radius 0.01
+            }
+          }
+          DEF LR_CT HingeJoint {
+            jointParameters HingeJointParameters {
+              position 0.6
+              axis 0 0 1
+              anchor 0 -0.01 0
+            }
+            device [
+              RotationalMotor {
+                name "lr_ct_flex/ext"
+                maxTorque 20
+              }
+            ]
+            endPoint DEF LR_FEMUR TouchSensor {
+              translation 0.014116061834875843 -0.030633390372741882 0
+              rotation 0 0 1 0.6000000000000003
+              children [
+                DEF R_FEMUR_SHAPE Shape {
+                  appearance USE BODY_APPEARANCE
+                  geometry Capsule {
+                    height 0.05
+                    radius 0.009
+                  }
+                }
+                DEF LR_FT HingeJoint {
+                  jointParameters HingeJointParameters {
+                    position -0.5
+                    axis 0 0 1
+                    anchor 0 -0.025 0
+                  }
+                  device [
+                    RotationalMotor {
+                      name "lr_ft_flex/ext"
+                      maxTorque 20
+                    }
+                  ]
+                  endPoint DEF LR_TIBIA TouchSensor {
+                    translation -0.01438276615812605 -0.0513274768567111 0
+                    rotation 0 0 -1 0.5000000000000004
+                    children [
+                      DEF R_TIBIA_SHAPE Shape {
+                        appearance USE BODY_APPEARANCE
+                        geometry Capsule {
+                          height 0.06
+                          radius 0.008
+                        }
+                      }
+                      DEF LR_TT HingeJoint {
+                        jointParameters HingeJointParameters {
+                          position 0.2
+                          axis 0 0 1
+                          anchor 0 -0.03 0
+                        }
+                        device [
+                          RotationalMotor {
+                            name "lr_tt_flex/ext"
+                            maxTorque 20
+                          }
+                        ]
+                        endPoint DEF LR_TARSUS TouchSensor {
+                          translation 0.008940119885777791 -0.07410299600285608 0
+                          rotation 0 0 1 0.1999999999999989
+                          children [
+                            DEF R_TARSUS_SHAPE Shape {
+                              appearance USE BODY_APPEARANCE
+                              geometry Capsule {
+                                height 0.09
+                                radius 0.005
+                              }
+                            }
+                            DEF LR_CLAW TouchSensor {
+                              translation 0 -0.045 0
+                              children [
+                                USE CLAW_SHAPE
+                              ]
+                              name "lr_claw"
+                              contactMaterial "fly_claw"
+                              boundingObject USE CLAW_SHAPE
+                              physics USE LEG_PHYSICS
+                            }
+                          ]
+                          name "lr_tarsus"
+                          contactMaterial "fly_claw"
+                          boundingObject USE R_TARSUS_SHAPE
+                          physics USE LEG_PHYSICS
+                        }
+                      }
+                    ]
+                    name "lr_tibia"
+                    boundingObject USE R_TIBIA_SHAPE
+                    physics USE LEG_PHYSICS
+                  }
+                }
+              ]
+              boundingObject USE R_FEMUR_SHAPE
+              physics USE LEG_PHYSICS
+            }
+          }
+        ]
+        name "lr_coxa"
+        boundingObject USE R_COXA_SHAPE
+        physics USE LEG_PHYSICS
+      }
+    }
+    DEF RF_TC BallJoint {
+      jointParameters BallJointParameters {
+        anchor -0.02 -0.04 0.04
+      }
+      jointParameters2 JointParameters {
+        position 0.7
+        axis -1 0 0
+      }
+      jointParameters3 JointParameters {
+        position 0.1
+        axis 0 0 -1
+      }
+      device [
+        RotationalMotor {
+          name "rf_tc_pro/re"
+          maxTorque 30
+        }
+      ]
+      device2 [
+        RotationalMotor {
+          name "rf_tc_rot"
+          minPosition -1.5707963267948966
+          maxPosition 1.5707963267948966
+          maxTorque 30
+        }
+      ]
+      device3 [
+        RotationalMotor {
+          name "rf_tc_abd/add"
+          maxTorque 30
+        }
+      ]
+      endPoint DEF RF_COXA TouchSensor {
+        translation -0.021527136175044873 -0.059900083305560514 0.041286289055625126
+        rotation -0.049517182829224966 0.9895182326235243 -0.13565292444423652 0.7068155531163084
+        children [
+          USE F_COXA_SHAPE
+          DEF RF_CT HingeJoint {
+            jointParameters HingeJointParameters {
+              position 1.5
+              axis 0 0 -1
+              anchor 0 -0.02 0
+            }
+            device [
+              RotationalMotor {
+                name "rf_ct_flex/ext"
+                maxTorque 20
+              }
+            ]
+            endPoint DEF RF_FEMUR TouchSensor {
+              translation -0.029924849598121563 -0.02212211605003109 0
+              rotation 0 0 -1 1.5
+              children [
+                USE F_FEMUR_SHAPE
+                DEF RF_FT HingeJoint {
+                  jointParameters HingeJointParameters {
+                    position -1
+                    axis 0 0 -1
+                    anchor 0 -0.03 0
+                  }
+                  device [
+                    RotationalMotor {
+                      name "rf_ft_flex/ext"
+                      maxTorque 20
+                    }
+                  ]
+                  endPoint DEF RF_TIBIA TouchSensor {
+                    translation 0.025244129544236896 -0.04620906917604419 0
+                    rotation 0 0 1 0.9999999999999998
+                    children [
+                      USE F_TIBIA_SHAPE
+                      DEF RF_TT HingeJoint {
+                        jointParameters HingeJointParameters {
+                          position 0.2
+                          axis 0 0 -1
+                          anchor 0 -0.03 0
+                        }
+                        device [
+                          RotationalMotor {
+                            name "rf_tt_flex/ext"
+                            maxTorque 20
+                          }
+                        ]
+                        endPoint DEF RF_TARSUS TouchSensor {
+                          translation -0.005960079923851863 -0.05940199733523739 0
+                          rotation 0 0 -1 0.1999999999999989
+                          children [
+                            USE F_TARSUS_SHAPE
+                            DEF RF_CLAW TouchSensor {
+                              translation 0 -0.03 0
+                              children [
+                                USE CLAW_SHAPE
+                              ]
+                              name "rf_claw"
+                              contactMaterial "fly_claw"
+                              boundingObject USE CLAW_SHAPE
+                              physics USE LEG_PHYSICS
+                            }
+                          ]
+                          name "rf_tarsus"
+                          contactMaterial "fly_claw"
+                          boundingObject USE F_TARSUS_SHAPE
+                          physics USE LEG_PHYSICS
+                        }
+                      }
+                    ]
+                    name "rf_tibia"
+                    boundingObject USE F_TIBIA_SHAPE
+                    physics USE LEG_PHYSICS
+                  }
+                }
+              ]
+              boundingObject USE F_FEMUR_SHAPE
+              physics USE LEG_PHYSICS
+            }
+          }
+        ]
+        name "rf_coxa"
+        boundingObject USE F_COXA_SHAPE
+        physics USE LEG_PHYSICS
+      }
+    }
+    DEF RR_TC BallJoint {
+      jointParameters BallJointParameters {
+        position -0.5
+        anchor -0.02 -0.04 -0.04
+      }
+      jointParameters2 JointParameters {
+        position -1.1
+        axis -1 0 0
+      }
+      jointParameters3 JointParameters {
+        position 0.2
+        axis 0 0 -1
+      }
+      device [
+        RotationalMotor {
+          name "rr_tc_pro/re"
+          maxTorque 20
+        }
+      ]
+      device2 [
+        RotationalMotor {
+          name "rr_tc_rot"
+          minPosition -1.5707963267948966
+          maxPosition 1.5707963267948966
+          maxTorque 20
+        }
+      ]
+      device3 [
+        RotationalMotor {
+          name "rr_tc_abd/add"
+          maxTorque 20
+        }
+      ]
+      endPoint DEF RR_COXA TouchSensor {
+        translation -0.020901156378948554 -0.047752043762797625 -0.046252498275117765
+        rotation 0.4430260253034775 -0.8214143162775432 -0.3591746955425707 1.2567459740239846
+        children [
+          USE R_COXA_SHAPE
+          DEF RR_CT HingeJoint {
+            jointParameters HingeJointParameters {
+              position 0.6
+              axis 0 0 -1
+              anchor 0 -0.01 0
+            }
+            device [
+              RotationalMotor {
+                name "rr_ct_flex/ext"
+                maxTorque 20
+              }
+            ]
+            endPoint DEF RR_FEMUR TouchSensor {
+              translation -0.014116061834875843 -0.030633390372741882 0
+              rotation 0 0 -1 0.6000000000000003
+              children [
+                USE R_FEMUR_SHAPE
+                DEF RR_FT HingeJoint {
+                  jointParameters HingeJointParameters {
+                    position -0.5
+                    axis 0 0 -1
+                    anchor 0 -0.025 0
+                  }
+                  device [
+                    RotationalMotor {
+                      name "rr_ft_flex/ext"
+                      maxTorque 20
+                    }
+                  ]
+                  endPoint DEF RR_TIBIA TouchSensor {
+                    translation 0.01438276615812605 -0.0513274768567111 0
+                    rotation 0 0 1 0.5000000000000004
+                    children [
+                      USE R_TIBIA_SHAPE
+                      DEF RR_TT HingeJoint {
+                        jointParameters HingeJointParameters {
+                          position 0.2
+                          axis 0 0 -1
+                          anchor 0 -0.03 0
+                        }
+                        device [
+                          RotationalMotor {
+                            name "rr_tt_flex/ext"
+                            maxTorque 20
+                          }
+                        ]
+                        endPoint DEF RR_TARSUS TouchSensor {
+                          translation -0.008940119885777791 -0.07410299600285608 0
+                          rotation 0 0 -1 0.1999999999999989
+                          children [
+                            USE R_TARSUS_SHAPE
+                            DEF RR_CLAW TouchSensor {
+                              translation 0 -0.045 0
+                              children [
+                                USE CLAW_SHAPE
+                              ]
+                              name "rr_claw"
+                              contactMaterial "fly_claw"
+                              boundingObject USE CLAW_SHAPE
+                              physics USE LEG_PHYSICS
+                            }
+                          ]
+                          name "rr_tarsus"
+                          contactMaterial "fly_claw"
+                          boundingObject USE R_TARSUS_SHAPE
+                          physics USE LEG_PHYSICS
+                        }
+                      }
+                    ]
+                    name "rr_tibia"
+                    boundingObject USE R_TIBIA_SHAPE
+                    physics USE LEG_PHYSICS
+                  }
+                }
+              ]
+              boundingObject USE R_FEMUR_SHAPE
+              physics USE LEG_PHYSICS
+            }
+          }
+        ]
+        name "rr_coxa"
+        boundingObject USE R_COXA_SHAPE
+        physics USE LEG_PHYSICS
+      }
+    }
+  ]
+  name "fly4"
+  boundingObject USE THORAX_SHAPE
+  physics Physics {
+    density 0.2
+  }
+  controller "amputated_oscillator_leg_controller"
+  supervisor TRUE
+}

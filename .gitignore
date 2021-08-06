@@ -6,4 +6,4 @@
 *.wbproj
 
 # Auxiliary files #
-aux_files/
+*.txt

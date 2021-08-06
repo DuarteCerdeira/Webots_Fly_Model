@@ -17,18 +17,23 @@ from inspyred.swarm import *
 
 WEBOTS_APP = ["C:\\Program Files\\Webots\\msys64\\mingw64\\bin\\webots.exe"]
 ARGUMENTS = [
-    "worlds\\fly_test.wbt", 
+    "worlds\\amputated_fly_test.wbt", 
     "--mode=realtime"
 ]
 WEBOTS_CALL = WEBOTS_APP + ARGUMENTS
 
-AUX_FILES_PATH = "controllers\\oscillator_leg_controller\\aux_files\\"
+AUX_FILES_PATH = "controllers\\amputated_oscillator_leg_controller\\aux_files\\"
 
 PARAM_FILE_PATH = AUX_FILES_PATH + "controller_parameters\\"
 RESULTS_FILE_PATH = AUX_FILES_PATH + "simulation_results\\"
 
-PARTICLE_SIZE = 5
-N_PARTICLES = 5
+# ========= Algorithm parameters ========= #
+
+PARTICLE_SIZE = 3   # Size of the parameter vector
+N_PARTICLES = 10    # Number of individuals in the population
+LOWER_BOUND = 0     # Lower bound for each value in the parameter vector
+UPPER_BOUND = 180   # Upper bound for each value in the parameter vector
+MAX_EVALS = 1000    # Maximum number of evaluations 
 
 def generator(random, args):
     """ Generates candidate solutions to the problem
@@ -42,7 +47,7 @@ def generator(random, args):
     size = args.get("num_inputs", 5)
 
     for i in range(size):
-        particle.append(random.uniform(0, 180))
+        particle.append(random.uniform(LOWER_BOUND, UPPER_BOUND))
 
     return particle
 
@@ -53,7 +58,7 @@ def evaluate(candidates, args):
         speed simulated in Webots
     """
     fitness = []
-    size = args.get("size", 5)
+    size = args.get("num_particles", 3)
 
     for i in range(size):
         params_file = open(PARAM_FILE_PATH + "fly{}".format(i) + ".txt", "w")
@@ -76,14 +81,17 @@ rand.seed(int(time()))
 ea = swarm.PSO(rand)
 ea.terminator = terminators.evaluation_termination
 ea.topology = topologies.ring_topology
-final_pop = ea.evolve(generator=generator,
-                      evaluator=evaluate,
-                      pop_size=5,
-                      bounder=ec.Bounder(0, 180),
-                      maximize=True,
-                      max_evaluations=10,
-                      num_inputs=PARTICLE_SIZE,
-                      size=N_PARTICLES)
+final_pop = ea.evolve(generator         = generator,
+                      evaluator         = evaluate,
+                      pop_size          = N_PARTICLES,
+                      maximize          = True,
+                      bounder           = Bounder(LOWER_BOUND, UPPER_BOUND),
+                      num_particles     = N_PARTICLES,
+                      num_inputs        = PARTICLE_SIZE,
+                      max_evaluations   = MAX_EVALS,
+                      inertia           = 0.7,
+                      cognitive_rate    = 1.47,
+                      social_rate       = 1.47)
 
 best = max(final_pop)
 

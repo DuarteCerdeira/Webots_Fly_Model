@@ -1,0 +1,72 @@
+#VRML_SIM R2021b utf8
+WorldInfo {
+  basicTimeStep 8
+  coordinateSystem "NUE"
+  contactProperties [
+    ContactProperties {
+      material1 "fly_claw"
+    }
+  ]
+}
+Viewpoint {
+  orientation 1 0 0 -1.5707996938995747
+  position 0 6 0.5
+  follow "robot"
+  followType "None"
+}
+Floor {
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+DEF FLY0 FourLeggedFly {
+  translation -2 0.2 0
+  controller "amputated_oscillator_leg_controller"
+  name "fly0"
+}
+DEF FLY1 FourLeggedFly {
+  translation -1 0.2 0
+  controller "amputated_oscillator_leg_controller"
+  name "fly1"
+}
+DEF FLY2 FourLeggedFly {
+  translation 0 0.2 0
+  controller "amputated_oscillator_leg_controller"
+  name "fly2"
+}
+DEF FLY3 FourLeggedFly {
+  translation 1 0.2 0
+  controller "amputated_oscillator_leg_controller"
+  name "fly3"
+}
+DEF FLY4 FourLeggedFly {
+  translation 2 0.2 0
+  controller "amputated_oscillator_leg_controller"
+  name "fly4"
+}
+DEF FLY5 FourLeggedFly {
+  translation -2 0.2 1
+  controller "amputated_oscillator_leg_controller"
+  name "fly5"
+}
+DEF FLY6 FourLeggedFly {
+  translation -1 0.2 1
+  controller "amputated_oscillator_leg_controller"
+  name "fly6"
+}
+DEF FLY7 FourLeggedFly {
+  translation 0 0.2 1
+  controller "amputated_oscillator_leg_controller"
+  name "fly7"
+}
+DEF FLY8 FourLeggedFly {
+  translation 1 0.2 1
+  controller "amputated_oscillator_leg_controller"
+  name "fly8"
+}
+DEF FLY9 FourLeggedFly {
+  translation 2 0.2 1
+  controller "amputated_oscillator_leg_controller"
+  name "fly9"
+}
