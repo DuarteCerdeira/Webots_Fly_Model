@@ -15,9 +15,14 @@
 #include <webots/motor.h>
 #include <webots/touch_sensor.h>
 
+#define TEST
+
 #define TIME_STEP 64
 #define ANGULAR_VELOCITY 0.5
-#define SIMULATION_RUN_TIME 5.0
+
+#ifndef TEST
+  #define SIMULATION_RUN_TIME 5.0
+#endif
 
 #define PI 3.14159265359
 
@@ -296,12 +301,19 @@ int main(int argc, char **argv) {
 
   const double initial_position = wb_supervisor_field_get_sf_vec3f(fly_translation)[2];
 
-  int time;
-  for (time = 0; time / 1000 < SIMULATION_RUN_TIME; time += TIME_STEP, wb_robot_step(TIME_STEP)) {
-    write_sensor_values();
-
-    actuate_motors(time, gait);
-  };
+  int time = 0;
+  #ifdef TEST
+    while(wb_robot_step(TIME_STEP) > -1) {
+      time += TIME_STEP;
+      write_sensor_values();
+      actuate_motors(time, gait);
+    }
+  #else
+    for (time = 0; time / 1000 < SIMULATION_RUN_TIME; time += TIME_STEP, wb_robot_step(TIME_STEP)) {
+      write_sensor_values();
+      actuate_motors(time, gait);
+    }
+  #endif
 
   // Calculate the average velocity of the robot at the end of the simulation
 
@@ -311,8 +323,9 @@ int main(int argc, char **argv) {
   fprintf(results_output, "%lf", av_velocity);
 
   // Cleanup code
-  
-  wb_supervisor_simulation_quit(EXIT_SUCCESS);
+  #ifndef TEST
+    wb_supervisor_simulation_quit(EXIT_SUCCESS);
+  #endif
 
   cleanup(EXIT_SUCCESS);
   
