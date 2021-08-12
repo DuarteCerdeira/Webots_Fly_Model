@@ -15,7 +15,7 @@
 #include <webots/motor.h>
 #include <webots/touch_sensor.h>
 
-#define TEST
+// #define TEST
 
 #define TIME_STEP 64
 #define ANGULAR_VELOCITY 0.5
@@ -86,8 +86,8 @@ static const char *claw_sensors[N_LEGS] = {
 // Define the joint limits and phase lags for each joint
 
 // Front legs
-const double front_upper_limits[N_LEG_JOINTS] = {-0.2, 1.0, 0.4, 2.2, -1.2, 0.2};
-const double front_lower_limits[N_LEG_JOINTS] = {-0.6, 0.8, 0.0, 1.6, -2.2, 0.2};
+const double front_upper_limits[N_LEG_JOINTS] = {-0.2, 1.0, 0.4, 2.2, -0.8, 0.2};
+const double front_lower_limits[N_LEG_JOINTS] = {-0.6, 0.8, 0.0, 1.4, -2.2, 0.2};
 const int front_phases[N_LEG_JOINTS]          = {0, 0, PI/2, PI, 0, 0};
 
 // Middle legs
@@ -180,7 +180,8 @@ void write_sensor_values(void)
  * Function:    calculate_velocity()
  * Description: calculates the average forward velocity of the robot
  * Arguments:   double time - time passed since the beginning of the simulation
- *              WbFieldRef translation[] - translation vector of the robot position
+ *              double initial_pos - starting position of the robot
+ *              double final_pos - final position of the robot
  * Returns:     average forward velocity of the robot
  */
 double calculate_velocity(double time, const double initial_pos, const double final_pos)
@@ -309,7 +310,7 @@ int main(int argc, char **argv) {
       actuate_motors(time, gait);
     }
   #else
-    for (time = 0; time / 1000 < SIMULATION_RUN_TIME; time += TIME_STEP, wb_robot_step(TIME_STEP)) {
+    for (time = 0; time / 1000 < SIMULATION_RUN_TIME && wb_robot_step(TIME_STEP) > -1; time += TIME_STEP) {
       write_sensor_values();
       actuate_motors(time, gait);
     }

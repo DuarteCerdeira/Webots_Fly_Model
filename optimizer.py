@@ -18,7 +18,7 @@ from inspyred.swarm import *
 WEBOTS_APP = ["C:\\Program Files\\Webots\\msys64\\mingw64\\bin\\webots.exe"]
 ARGUMENTS = [
     "worlds\\amputated_fly_test.wbt", 
-    "--mode=realtime"
+    "--mode=fast"
 ]
 WEBOTS_CALL = WEBOTS_APP + ARGUMENTS
 
@@ -30,10 +30,10 @@ RESULTS_FILE_PATH = AUX_FILES_PATH + "simulation_results\\"
 # ========= Algorithm parameters ========= #
 
 PARTICLE_SIZE = 3   # Size of the parameter vector
-N_PARTICLES = 10    # Number of individuals in the population
+N_PARTICLES = 5     # Number of individuals in the population
 LOWER_BOUND = 0     # Lower bound for each value in the parameter vector
 UPPER_BOUND = 180   # Upper bound for each value in the parameter vector
-MAX_EVALS = 1000    # Maximum number of evaluations 
+MAX_EVALS = 500     # Maximum number of evaluations 
 
 def generator(random, args):
     """ Generates candidate solutions to the problem
