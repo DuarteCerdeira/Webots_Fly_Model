@@ -15,9 +15,14 @@
 #include <webots/motor.h>
 #include <webots/touch_sensor.h>
 
+#define TEST
+
 #define TIME_STEP 64
 #define ANGULAR_VELOCITY 0.5
-#define SIMULATION_RUN_TIME 5.0
+
+#ifndef TEST
+  #define SIMULATION_RUN_TIME 5.0
+#endif
 
 #define PI 3.14159265359
 
@@ -188,14 +193,13 @@ void write_sensor_values(void)
  * Function:    calculate_velocity()
  * Description: calculates the average forward velocity of the robot
  * Arguments:   double time - time passed since the beginning of the simulation
- *              WbFieldRef translation[] - translation vector of the robot position
+ *              double initial_pos - starting position of the robot
+ *              double final_pos - final position of the robot
  * Returns:     average forward velocity of the robot
  */
-double calculate_velocity(double time, WbFieldRef translation)
+double calculate_velocity(double time, const double initial_pos, const double final_pos)
 {
-  const double *trans_values = wb_supervisor_field_get_sf_vec3f(translation);
-  double z_position = trans_values[2];
-  return z_position / ((double) time / 1000);
+  return (final_pos - initial_pos) / ((double) time / 1000);
 }
 
 /*
@@ -311,21 +315,33 @@ int main(int argc, char **argv) {
   fprintf(sensor_output, "==========TEST RESULT==========\n");
   fprintf(sensor_output, "| LF | LM | LR | RF | RM | RR |\n");
 
-  int time;
-  for (time = 0; time / 1000 < SIMULATION_RUN_TIME; time += TIME_STEP, wb_robot_step(TIME_STEP)) {
-    write_sensor_values();
+  const double initial_position = wb_supervisor_field_get_sf_vec3f(fly_translation)[2];
 
-    actuate_motors(time, gait);
-  };
+  int time = 0;
+  #ifdef TEST
+    while(wb_robot_step(TIME_STEP) > -1) {
+      time += TIME_STEP;
+      write_sensor_values();
+      actuate_motors(time, gait);
+    }
+  #else
+    for (time = 0; time / 1000 < SIMULATION_RUN_TIME && wb_robot_step(TIME_STEP) > -1; time += TIME_STEP) {
+      write_sensor_values();
+      actuate_motors(time, gait);
+    };
+  #endif
 
   // Calculate the average velocity of the robot at the end of the simulation
 
-  double av_velocity = calculate_velocity(time, fly_translation);
+  const double final_position = wb_supervisor_field_get_sf_vec3f(fly_translation)[2];
+
+  double av_velocity = calculate_velocity(time, initial_position, final_position);
   fprintf(results_output, "%lf", av_velocity);
 
   // Cleanup code
-
-  wb_supervisor_simulation_quit(EXIT_SUCCESS);
+  #ifndef TEST
+    wb_supervisor_simulation_quit(EXIT_SUCCESS);
+  #endif
 
   cleanup(EXIT_SUCCESS);
   
