@@ -179,13 +179,33 @@ void actuate_motors(double t, double gait[])
  */
 void write_sensor_values(void)
 {
+  static double t_stance_step[N_LEGS];
+  static bool step[N_LEGS];
+
   for (int i = 0; i < N_LEGS; i++) {
-    if (wb_touch_sensor_get_value(claw[i]))
+    if (wb_touch_sensor_get_value(claw[i])) {
+      if (!step[i])
+        t_stance_step[i] = 0;
+      else t_stance_step[i] += TIME_STEP;
       fprintf(sensor_output, "| ++ ");
-    else
+      step[i] = true;
+    }
+    else {
+      if (step[i])
+        t_stance_step[i] = 0;
+      else t_stance_step[i] += TIME_STEP;
       fprintf(sensor_output, "|    ");
+      step[i] = false;
+    }
   } 
-  fprintf(sensor_output, "|\n"); 
+  fprintf(sensor_output, "| "); 
+  for (int i = 0; i < N_LEGS; i++) {
+    if (t_stance_step[i] == 0.0)
+      fprintf(sensor_output, " ====== , ");
+    else
+      fprintf(sensor_output, "%.3lf ms, ", t_stance_step[i] / 1000);
+  }
+  fprintf(sensor_output, "\n");
   return;
 }
 
