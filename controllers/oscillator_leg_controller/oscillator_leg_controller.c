@@ -394,7 +394,7 @@ int main(int argc, char **argv) {
     for (time = 0; time / 1000 < SIMULATION_RUN_TIME && wb_robot_step(TIME_STEP) > -1; time += TIME_STEP) {
       output_results();
       actuate_motors(time, gait);
-    };
+    }
   #endif
 
   // Calculate the average velocity of the robot at the end of the simulation

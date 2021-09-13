@@ -15,7 +15,7 @@
 #include <webots/motor.h>
 #include <webots/touch_sensor.h>
 
-#define TEST
+// #define TEST
 
 #define TIME_STEP 64
 #define ANGULAR_VELOCITY 0.5
@@ -83,6 +83,13 @@ static const char *claw_sensors[N_LEGS] = {
   "rf_claw", "rr_claw"
 };
 
+// Claw node references
+static WbNodeRef claw_node[N_LEGS];
+static const char *claw_names[N_LEGS] = {
+  "LF_CLAW", "RF_CLAW", 
+  "LR_CLAW", "RR_CLAW"
+}; 
+
 // Define the joint limits and phase lags for each joint
 
 // Front legs
@@ -91,7 +98,6 @@ const double front_lower_limits[N_LEG_JOINTS] = {-0.6, 0.8, 0.0, 1.4, -2.2, 0.2}
 const int front_phases[N_LEG_JOINTS]          = {0, 0, PI/2, PI, 0, 0};
 
 // Middle legs
-
 
 // Rear legs
 const double rear_upper_limits[N_LEG_JOINTS] = {-0.2, -0.4, 0.0, 2.2, -0.8, 0.4};
@@ -150,12 +156,23 @@ void actuate_motors(double t, double gait[])
     wb_motor_set_position(rf_leg[i], oscillator(front_upper_limits[i], front_lower_limits[i], ANGULAR_VELOCITY * t, front_phases[i] + gait[0]));
 
 
-
     wb_motor_set_position(lr_leg[i], oscillator(rear_upper_limits[i], rear_lower_limits[i], ANGULAR_VELOCITY * t, rear_phases[i] + gait[1]));
     wb_motor_set_position(rr_leg[i], oscillator(rear_upper_limits[i], rear_lower_limits[i], ANGULAR_VELOCITY * t, rear_phases[i] + gait[2]));
   }
 
   return;
+}
+
+/*
+ * Function:    calculate_length()
+ * Description: calculates the distance between two points in 3D
+ * Arguments:   double p1[] - point 1
+ *              double p2[] - point 2
+ * Returns:     distance between the two points
+ */
+double calculate_length(double p1[], double p2[])
+{
+  return sqrt(((p2[0] - p1[0]) * (p2[0] - p1[0])) + ((p2[1] - p1[1]) * (p2[1] - p1[1])) + ((p2[2] - p1[2]) * (p2[2] - p1[2])));
 }
 
 /*
@@ -167,33 +184,51 @@ void actuate_motors(double t, double gait[])
 void output_results(void)
 {
   static double t_stance_swing[N_LEGS];
+  static double claw_init_pos[N_LEGS][3];
+  static double claw_final_pos[N_LEGS][3];
+  static double step_length[N_LEGS];
+
   static bool step[N_LEGS];
 
   for (int i = 0; i < N_LEGS; i++) {
-    if (wb_touch_sensor_get_value(claw[i])) {
-      if (!step[i])
-        t_stance_swing[i] = 0;
-      else t_stance_swing[i] += TIME_STEP;
+    if (wb_touch_sensor_get_value(claw[i])) {                                       // claw is touching the ground:
+      if (!step[i]) {                                                               // if the claw was previously on the air:
+        for (int j = 0; j < 3; j++)
+          claw_final_pos[i][j] = wb_supervisor_node_get_position(claw_node[i])[j];  // register the final coordinates of the claw,
+        step_length[i] = calculate_length(claw_init_pos[i], claw_final_pos[i]);     // calculate the step length,
+        t_stance_swing[i] = 0;                                                      // reset stance timer,
+      }
+      else {
+        t_stance_swing[i] += TIME_STEP;                                             // and increment for every TIME_STEP ms on the ground
+      }
       fprintf(sensor_output, "| ++ ");
       step[i] = true;
     }
-    else {
-      if (step[i])
-        t_stance_swing[i] = 0;
-      else t_stance_swing[i] += TIME_STEP;
+    else {                                                                        // claw is on the air:
+      if (step[i]) {                                                              // if the claw was previously on the ground:
+        for (int j = 0; j < 3; j++)
+          claw_init_pos[i][j] = wb_supervisor_node_get_position(claw_node[i])[j]; // register the initial coordinates of the claw,
+        t_stance_swing[i] = 0;                                                    // reset swing timer,
+      }
+      else t_stance_swing[i] += TIME_STEP;                                        // and increment for every TIME_STEP ms on the air
       fprintf(sensor_output, "|    ");
       step[i] = false;
     }
   } 
-  fprintf(sensor_output, "| "); 
+  fprintf(sensor_output, "|"); 
 
   // Register the time spent in stance/swing 
   
   for (int i = 0; i < N_LEGS; i++) {
-    if (t_stance_swing[i] == 0.0)
-      fprintf(sensor_output, " ====== , ");
+    if (t_stance_swing[i] == 0.0) {
+      fprintf(sensor_output, " ======= |");
+      if (step[i])
+        fprintf(sensor_output, " %.3lf m |", step_length[i]);
+      else
+        fprintf(sensor_output, "         |");
+    }
     else
-      fprintf(sensor_output, "%.3lf s, ", t_stance_swing[i] / 1000);
+      fprintf(sensor_output, " %.3lf s |         |", t_stance_swing[i] / 1000);
   }
   fprintf(sensor_output, "\n");
   return;
@@ -261,12 +296,17 @@ char *make_file_name(const char *file_path, const char *identifier)
 int main(int argc, char **argv) {
   wb_robot_init();
 
-  // Get the robot translation field
+  // Get the robot position
 
   WbNodeRef fly_node = wb_supervisor_node_get_self();
   if (fly_node == NULL)
     cleanup(EXIT_FAILURE);
   WbFieldRef fly_translation = wb_supervisor_node_get_field(fly_node, "translation");
+
+  // Get the claw nodes
+
+  for (int i = 0; i < N_LEGS; i++)
+    claw_node[i] = wb_supervisor_node_get_from_def(claw_names[i]);
 
   // Open files
 
@@ -320,8 +360,8 @@ int main(int argc, char **argv) {
   // Main feedback loop
   // Read sensor values and actuate the motors according to the given gait pattern
 
-  fprintf(sensor_output, "=====TEST RESULT=====\n");
-  fprintf(sensor_output, "| LF | LR | RF | RR |\n");
+  fprintf(sensor_output, "|===Checker Plots===|        LF         |        LR         |        RF         |        RR         |\n");
+  fprintf(sensor_output, "| LF | LR | RF | RR |    t    |    l    |    t    |    l    |    t    |    l    |    t    |    l    |\n");
 
   const double initial_position = wb_supervisor_field_get_sf_vec3f(fly_translation)[2];
 
