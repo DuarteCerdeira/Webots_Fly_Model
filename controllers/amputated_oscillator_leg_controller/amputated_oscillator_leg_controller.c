@@ -159,12 +159,12 @@ void actuate_motors(double t, double gait[])
 }
 
 /*
- * Function:    write_sensor_values()
- * Description: writes the sensor values in a text file
+ * Function:    output_results()
+ * Description: writes the output values in a text file
  * Arguments:   None
  * Returns:     None
  */
-void write_sensor_values(void)
+void output_results(void)
 {
   static double t_stance_swing[N_LEGS];
   static bool step[N_LEGS];
@@ -329,12 +329,12 @@ int main(int argc, char **argv) {
   #ifdef TEST
     while(wb_robot_step(TIME_STEP) > -1) {
       time += TIME_STEP;
-      write_sensor_values();
+      output_results();
       actuate_motors(time, gait);
     }
   #else
     for (time = 0; time / 1000 < SIMULATION_RUN_TIME && wb_robot_step(TIME_STEP) > -1; time += TIME_STEP) {
-      write_sensor_values();
+      output_results();
       actuate_motors(time, gait);
     }
   #endif
