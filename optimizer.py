@@ -70,8 +70,9 @@ def evaluate(candidates, args):
 
     for i in range(size):
         results_file = open(RESULTS_FILE_PATH + "fly{}".format(i) + ".txt", "r")
-        fitness.append(float(results_file.read()))
-        results_file.close()
+        file_contents = results_file.read().split("\nAverage Velocity:\n")
+        print(float(file_contents[1]))
+        fitness.append(float(file_contents[1]))
 
     return fitness
 

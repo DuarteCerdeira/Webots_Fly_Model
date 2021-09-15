@@ -22,26 +22,26 @@ TexturedBackgroundLight {
 }
 DEF FLY0 FourLeggedFly {
   translation -2 0.2 0
-  controller "amputated_oscillator_leg_controller"
+  controller "amputated_fly_controller_swarm"
   name "fly0"
 }
 DEF FLY1 FourLeggedFly {
   translation -1 0.2 0
-  controller "amputated_oscillator_leg_controller"
+  controller "amputated_fly_controller_swarm"
   name "fly1"
 }
 DEF FLY2 FourLeggedFly {
   translation 0 0.2 0
-  controller "amputated_oscillator_leg_controller"
+  controller "amputated_fly_controller_swarm"
   name "fly2"
 }
 DEF FLY3 FourLeggedFly {
   translation 1 0.2 0
-  controller "amputated_oscillator_leg_controller"
+  controller "amputated_fly_controller_swarm"
   name "fly3"
 }
 DEF FLY4 FourLeggedFly {
   translation 2 0.2 0
-  controller "amputated_oscillator_leg_controller"
+  controller "amputated_fly_controller_swarm"
   name "fly4"
 }

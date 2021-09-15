@@ -22,26 +22,26 @@ TexturedBackgroundLight {
 }
 DEF FLY0 SixLeggedFly {
   translation 0 0.2 0
-  controller "oscillator_leg_controller"
+  controller "fly_controller_swarm"
   name "fly0"
 }
 DEF FLY1 SixLeggedFly {
   translation 1 0.2 0
-  controller "oscillator_leg_controller"
+  controller "fly_controller_swarm"
   name "fly1"
 }
 DEF FLY2 SixLeggedFly {
   translation -1 0.2 0
-  controller "oscillator_leg_controller"
+  controller "fly_controller_swarm"
   name "fly2"
 }
 DEF FLY3 SixLeggedFly {
   translation 2 0.2 0
-  controller "oscillator_leg_controller"
+  controller "fly_controller_swarm"
   name "fly3"
 }
 DEF FLY4 SixLeggedFly {
   translation -2 0.2 0
-  controller "oscillator_leg_controller"
+  controller "fly_controller_swarm"
   name "fly4"
 }

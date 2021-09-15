@@ -969,6 +969,6 @@ DEF FLY Robot {
   physics Physics {
     density 0.2
   }
-  controller "oscillator_leg_controller"
+  controller "fly_controller"
   supervisor TRUE
 }

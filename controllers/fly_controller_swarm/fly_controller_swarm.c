@@ -29,12 +29,8 @@
 #define N_LEGS 6
 #define N_LEG_JOINTS 6
 
-#define SENSOR_FILE_PATH "aux_files\\sensor_values\\"
 #define PARAMETERS_FILE_PATH "aux_files\\controller_parameters\\"
 #define RESULTS_FILE_PATH "aux_files\\simulation_results\\"
-
-// File to save touch sensor values
-static FILE *sensor_output;
 
 // File to fetch leg parameters
 static FILE *parameters_input;
@@ -217,7 +213,7 @@ void output_results(void)
       else {
         t_stance_swing[i] += TIME_STEP;                                             // and increment for every TIME_STEP ms on the ground
       }
-      fprintf(sensor_output, "| ++ ");
+      fprintf(results_output, "| ++ ");
       step[i] = true;
     }
     else {                                                                        // claw is on the air:
@@ -227,26 +223,26 @@ void output_results(void)
         t_stance_swing[i] = 0;                                                    // reset swing timer,
       }
       else t_stance_swing[i] += TIME_STEP;                                        // and increment for every TIME_STEP ms on the air
-      fprintf(sensor_output, "|    ");
+      fprintf(results_output, "|    ");
       step[i] = false;
     }
   } 
-  fprintf(sensor_output, "|"); 
+  fprintf(results_output, "|"); 
 
   // Register the time spent in stance/swing
 
   for (int i = 0; i < N_LEGS; i++) {
     if (t_stance_swing[i] == 0.0) {
-      fprintf(sensor_output, " ======= |");
+      fprintf(results_output, " ======= |");
       if (step[i])
-        fprintf(sensor_output, " %.3lf m |", step_length[i]);
+        fprintf(results_output, " %.3lf m |", step_length[i]);
       else
-        fprintf(sensor_output, "         |");
+        fprintf(results_output, "         |");
     }
     else
-      fprintf(sensor_output, " %.3lf s |         |", t_stance_swing[i] / 1000);
+      fprintf(results_output, " %.3lf s |         |", t_stance_swing[i] / 1000);
   }
-  fprintf(sensor_output, "\n");
+  fprintf(results_output, "\n");
   return;
 }
 
@@ -271,10 +267,9 @@ double calculate_velocity(double time, const double initial_pos, const double fi
  */
 void cleanup(int status)
 {
-  if (sensor_output && parameters_input && results_output) {
-    fclose(sensor_output);
-    fclose(parameters_input);
+  if (results_output && parameters_input) {
     fclose(results_output);
+    fclose(parameters_input);
   }
 
   wb_robot_cleanup();
@@ -322,30 +317,31 @@ int main(int argc, char **argv) {
   // Get the claw nodes
 
   for (int i = 0; i < N_LEGS; i++)
-    claw_node[i] = wb_supervisor_node_get_from_def(claw_names[i]);
+    #ifdef TEST
+      claw_node[i] = wb_supervisor_node_get_from_def(claw_names[i]);
+    #else
+      claw_node[i] = wb_supervisor_node_get_from_proto_def(fly_node, claw_names[i]);
+    #endif
 
   // Open files
 
   const char *fly_name = wb_robot_get_name();
   char *parameters_file_name = make_file_name(PARAMETERS_FILE_PATH, fly_name);
   char *results_file_name = make_file_name(RESULTS_FILE_PATH, fly_name);
-  char *sensor_file_name = make_file_name(SENSOR_FILE_PATH, fly_name);
 
-  if (parameters_file_name == NULL || results_file_name == NULL || sensor_file_name == NULL) // Check if the memory was allocated correctly
+  if (parameters_file_name == NULL || results_file_name == NULL) // Check if the memory was allocated correctly
     cleanup(EXIT_FAILURE);
 
   parameters_input = fopen(parameters_file_name, "r");
   results_output = fopen(results_file_name, "w");
-  sensor_output = fopen(sensor_file_name, "w");
 
-  if (sensor_output == NULL|| parameters_input == NULL || results_output == NULL) // Check if the files were open
+  if (results_output == NULL|| parameters_input == NULL) // Check if the files were open
     cleanup(EXIT_FAILURE);
 
   // Free the allocated memory
 
   free(parameters_file_name);
   free(results_file_name);
-  free(sensor_file_name);
 
   // Get gait pattern
 
@@ -378,8 +374,8 @@ int main(int argc, char **argv) {
   // Main feedback loop
   // Read sensor values and actuate the motors according to the given gait pattern
 
-  fprintf(sensor_output, "|========Checker Plots========|        LF         |        LM         |        LR         |        RF         |        RM         |        RR         |\n");
-  fprintf(sensor_output, "| LF | LM | LR | RF | RM | RR |    t    |    l    |    t    |    l    |    t    |    l    |    t    |    l    |    t    |    l    |    t    |    l    |\n");
+  fprintf(results_output, "|========Checker Plots========|        LF         |        LM         |        LR         |        RF         |        RM         |        RR         |\n");
+  fprintf(results_output, "| LF | LM | LR | RF | RM | RR |    t    |    l    |    t    |    l    |    t    |    l    |    t    |    l    |    t    |    l    |    t    |    l    |\n");
 
   const double initial_position = wb_supervisor_field_get_sf_vec3f(fly_translation)[2];
 
@@ -402,6 +398,7 @@ int main(int argc, char **argv) {
   const double final_position = wb_supervisor_field_get_sf_vec3f(fly_translation)[2];
 
   double av_velocity = calculate_velocity(time, initial_position, final_position);
+  fprintf(results_output, "\nAverage Velocity:\n");
   fprintf(results_output, "%lf", av_velocity);
 
   // Cleanup code
