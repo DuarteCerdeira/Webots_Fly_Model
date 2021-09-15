@@ -17,12 +17,12 @@ from inspyred.swarm import *
 
 WEBOTS_APP = ["C:\\Program Files\\Webots\\msys64\\mingw64\\bin\\webots.exe"]
 ARGUMENTS = [
-    "worlds\\amputated_fly_test.wbt", 
+    "worlds\\amputated_fly_swarm.wbt", 
     "--mode=fast"
 ]
 WEBOTS_CALL = WEBOTS_APP + ARGUMENTS
 
-AUX_FILES_PATH = "controllers\\amputated_oscillator_leg_controller\\aux_files\\"
+AUX_FILES_PATH = "controllers\\amputated_fly_controller_swarm\\aux_files\\"
 
 PARAM_FILE_PATH = AUX_FILES_PATH + "controller_parameters\\"
 RESULTS_FILE_PATH = AUX_FILES_PATH + "simulation_results\\"
@@ -71,7 +71,6 @@ def evaluate(candidates, args):
     for i in range(size):
         results_file = open(RESULTS_FILE_PATH + "fly{}".format(i) + ".txt", "r")
         file_contents = results_file.read().split("\nAverage Velocity:\n")
-        print(float(file_contents[1]))
         fitness.append(float(file_contents[1]))
 
     return fitness
