@@ -11,7 +11,7 @@ This is a Reference Manual for running the optimizer algorithm for the Webots fl
 
 To execute the python script open a command line in the working directory and write the following command:
 
-> python optimizer.py
+`python optimizer.py`
 
 The script will run the optimization algorithm, which runs several instances of the webots simulation, and write the final results in the command line.
 
@@ -29,7 +29,7 @@ Inside the python script there are several simulation parameters that can be adj
 
 ## SELECTING SIMULATIONS
 
-There are 2 possible scenarios that can be simulated, a swarm of 6-legged flies and a swarm of 4-legged flies. To change the scenario, open *optimizer.py* in a text editor and edit the values under **# ========= SCENARIO SELECTION ========= #**:
+There are 2 possible scenarios that can be simulated, a swarm of 6-legged flies and a swarm of 4-legged flies. To change the scenario, open *optimizer.py* in a text editor and edit the values under **# ========= Scenario selection ========= #**:
 
 - In the variable **ARGUMENTS** write *"worlds\\amputated_fly_swarm.wbt"* for 4-legged flies or *"worlds\\fly_swarm.wbt"* for 6-legged flies.
 
