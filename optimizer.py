@@ -16,6 +16,9 @@ from inspyred.ec import *
 from inspyred.swarm import *
 
 WEBOTS_APP = ["C:\\Program Files\\Webots\\msys64\\mingw64\\bin\\webots.exe"]
+
+# ========= Scenario selection ========= #
+
 ARGUMENTS = [
     "worlds\\amputated_fly_swarm.wbt", 
     "--mode=fast"
