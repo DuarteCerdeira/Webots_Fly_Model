@@ -44,24 +44,43 @@ Each individual in the simulation records data that can be analyzed to help comp
 Example of a file:
 
 > |===Checker Plots===|        LF         |        LR         |        RF         |        RR         |
+> 
 > | LF | LR | RF | RR |    t    |    l    |    t    |    l    |    t    |    l    |    t    |    l    |
+> 
 > |    |    |    |    | 0.064 s |         | 0.064 s |         | 0.064 s |         | 0.064 s |         |
+> 
 > | ++ | ++ | ++ | ++ | ======= | 0.889 m | ======= | 1.133 m | ======= | 0.947 m | ======= | 1.126 m |
+> 
 > | ++ | ++ | ++ | ++ | 0.064 s |         | 0.064 s |         | 0.064 s |         | 0.064 s |         |
+> 
 > | ++ | ++ | ++ | ++ | 0.128 s |         | 0.128 s |         | 0.128 s |         | 0.128 s |         |
+> 
 > | ++ | ++ | ++ | ++ | 0.192 s |         | 0.192 s |         | 0.192 s |         | 0.192 s |         |
+> 
 > | ++ | ++ | ++ | ++ | 0.256 s |         | 0.256 s |         | 0.256 s |         | 0.256 s |         |
+> 
 > | ++ | ++ | ++ | ++ | 0.320 s |         | 0.320 s |         | 0.320 s |         | 0.320 s |         |
+> 
 > | ++ | ++ | ++ | ++ | 0.384 s |         | 0.384 s |         | 0.384 s |         | 0.384 s |         |
+> 
 > | ++ |    | ++ | ++ | 0.448 s |         | ======= |         | 0.448 s |         | 0.448 s |         |
+> 
 > | ++ |    | ++ | ++ | 0.512 s |         | 0.064 s |         | 0.512 s |         | 0.512 s |         |
+> 
 > | ++ |    | ++ | ++ | 0.576 s |         | 0.128 s |         | 0.576 s |         | 0.576 s |         |
+> 
 > | ++ | ++ | ++ | ++ | 0.640 s |         | ======= | 0.033 m | 0.640 s |         | 0.640 s |         |
+> 
 > |    | ++ | ++ | ++ | ======= |         | 0.064 s |         | 0.704 s |         | 0.704 s |         |
+> 
 > | ++ | ++ | ++ | ++ | ======= | 0.042 m | 0.128 s |         | 0.768 s |         | 0.768 s |         |
+> 
 > | ++ | ++ | ++ | ++ | 0.064 s |         | 0.192 s |         | 0.832 s |         | 0.832 s |         |
->
+> 
+> 
+> 
 > Average Velocity:
+> 
 > 0.206327
 
 In the first part there is a checker plot graph describing the movement of the particular individual, after that there is a column registering the swing/stance duration and the step length for each respective leg (LF - Left front, RR - Right Rear, etc...).
